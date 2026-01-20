@@ -28,7 +28,6 @@ export const EditorState = {
   createDestination(name) {
     const id = name.toLowerCase().replace(/\s+/g, "-");
     if (this.data.destinations[id]) return null;
-
     this.data.destinations[id] = {
       center: [23.8, 90.4],
       zoom: 11,
@@ -60,36 +59,34 @@ export const EditorState = {
   updateGlobalCost(key, val) {
     this.data.baseCosts[key] = val;
   },
-
   updateDestCenter(lat, lng) {
-    if (this.activeDestId) {
+    if (this.activeDestId)
       this.data.destinations[this.activeDestId].center = [lat, lng];
-    }
   },
 
   addResort() {
     if (!this.activeDestId) return;
-    const dest = this.data.destinations[this.activeDestId];
-    dest.resorts.push({
+    this.data.destinations[this.activeDestId].resorts.push({
       id: Date.now(),
       name: "New Resort",
       location: "Location",
       priceCouple: 4000,
       priceFamily: 6000,
       priceDorm: 8000,
-      lat: dest.center[0],
-      lng: dest.center[1],
+      lat: this.data.destinations[this.activeDestId].center[0],
+      lng: this.data.destinations[this.activeDestId].center[1],
       rating: 4.0,
       activities: [],
       image:
         "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&h=100&fit=crop",
+      facebook: "",
+      maps: "",
     });
   },
 
   removeResort(idx) {
-    if (this.activeDestId) {
+    if (this.activeDestId)
       this.data.destinations[this.activeDestId].resorts.splice(idx, 1);
-    }
   },
 
   updateResort(idx, field, val) {
@@ -114,26 +111,24 @@ export const EditorState = {
   },
 
   addDay() {
-    if (this.activeDestId) {
-      const itin = this.data.destinations[this.activeDestId].itinerary;
-      itin.push({ day: `Day ${itin.length + 1}`, items: [] });
-    }
+    if (this.activeDestId)
+      this.data.destinations[this.activeDestId].itinerary.push({
+        day: `Day ${this.data.destinations[this.activeDestId].itinerary.length + 1}`,
+        items: [],
+      });
   },
 
   removeDay(idx) {
-    if (this.activeDestId) {
+    if (this.activeDestId)
       this.data.destinations[this.activeDestId].itinerary.splice(idx, 1);
-    }
   },
 
   updateDay(idx, field, val) {
-    const day = this.data.destinations[this.activeDestId].itinerary[idx];
-    day[field] = val;
+    this.data.destinations[this.activeDestId].itinerary[idx][field] = val;
   },
 
   addItem(dayIdx) {
-    const day = this.data.destinations[this.activeDestId].itinerary[dayIdx];
-    day.items.push({
+    this.data.destinations[this.activeDestId].itinerary[dayIdx].items.push({
       time: "10:00 AM",
       activity: "New Activity",
       costActivity: 0,
@@ -143,8 +138,10 @@ export const EditorState = {
   },
 
   removeItem(dayIdx, itemIdx) {
-    const day = this.data.destinations[this.activeDestId].itinerary[dayIdx];
-    day.items.splice(itemIdx, 1);
+    this.data.destinations[this.activeDestId].itinerary[dayIdx].items.splice(
+      itemIdx,
+      1,
+    );
   },
 
   updateItem(dayIdx, itemIdx, field, val) {

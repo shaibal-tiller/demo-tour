@@ -16,7 +16,9 @@ export const DataService = {
       const response = await fetch("./data.json");
       if (!response.ok) throw new Error("Could not load data.json");
       const data = await response.json();
+
       this.migrateData(data);
+
       showToast("Loaded default data from Online", "info");
       return { data: data, source: "online", filename: null };
     } catch (error) {
@@ -38,6 +40,8 @@ export const DataService = {
 
   migrateData(data) {
     const bc = data.baseCosts || {};
+
+    // 1. Bus Migration (Split Up/Down)
     if (!bc.busTicketUp && !bc.busTicketDown) {
       let totalBus =
         bc.busTicketPrice || (bc.bus ? Math.round(bc.bus / 30) : 0);
@@ -47,44 +51,61 @@ export const DataService = {
       }
     }
 
+    // 2. Resort Price Migration (Couple/Family/Dorm)
     Object.values(data.destinations).forEach((dest) => {
       (dest.resorts || []).forEach((r) => {
+        // If only pricePerNight exists, migrate it to granular
         if (r.pricePerNight && !r.priceCouple) {
           r.priceCouple = r.pricePerNight;
-          r.priceFamily = Math.round(r.pricePerNight * 1.6);
-          r.priceDorm = Math.round(r.pricePerNight * 2.5);
+          r.priceFamily = Math.round(r.pricePerNight * 1.6); // Default 1.6x multiplier
+          r.priceDorm = Math.round(r.pricePerNight * 2.5); // Default 2.5x multiplier
         }
+        // Fallbacks if only some exist
         if (!r.priceCouple) r.priceCouple = 4000;
         if (!r.priceFamily) r.priceFamily = 6000;
         if (!r.priceDorm) r.priceDorm = 8000;
       });
 
+      // 3. Itinerary Cost Migration (Granular Item Costs)
       if (dest.itinerary) {
+        // Legacy Global Food check
+        const globalFood = bc.foodPerPerson ? parseInt(bc.foodPerPerson) : 0;
+        const dailyFoodShare =
+          globalFood > 0 ? Math.round(globalFood / dest.itinerary.length) : 0;
+
         dest.itinerary.forEach((day) => {
+          // Migrate daily foodCost to items if needed, or just ensure items exist
           if (!day.items) day.items = [];
+
           day.items.forEach((item) => {
             if (item.costActivity === undefined) item.costActivity = 0;
             if (item.costFood === undefined) item.costFood = 0;
             if (item.costTransport === undefined) item.costTransport = 0;
           });
-          // Legacy food migration if needed
+
+          // If we had a legacy "daily food cost", we can leave it on the day object for reference
+          // OR try to distribute it. For now, we'll keep the logic in UI to check items first.
+          // But to support the NEW EDITOR, let's push legacy daily food cost into a "Lunch/Dinner" item if possible
           if (day.foodCost && !day.items.some((i) => i.costFood > 0)) {
+            // Create a dummy food item if none exists
             day.items.push({
               time: "1:00 PM",
-              activity: "Lunch & Dinner (Legacy)",
+              activity: "Lunch & Dinner (Legacy Data)",
               costFood: day.foodCost,
               costActivity: 0,
               costTransport: 0,
             });
-            delete day.foodCost;
+            delete day.foodCost; // Remove legacy field
           }
         });
       }
     });
+
     data.baseCosts = bc;
   },
 
   parseCSV(csvText) {
+    // Simplified CSV parser logic
     const lines = csvText.split("\n").filter((l) => l.trim());
     const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
     const resorts = [];
@@ -102,12 +123,9 @@ export const DataService = {
         else if (header.includes("rating")) resort.rating = parseFloat(val);
         else if (header.includes("activities"))
           resort.activities = val.split(";").map((s) => s.trim());
-        else if (header.includes("facebook") || header.includes("fb"))
-          resort.facebook = val;
-        else if (header.includes("map") || header.includes("google"))
-          resort.maps = val;
         else resort[header] = val;
       });
+      // Defaults
       if (!resort.priceCouple) resort.priceCouple = 5000;
       resort.priceFamily = Math.round(resort.priceCouple * 1.6);
       resort.priceDorm = Math.round(resort.priceCouple * 2.5);

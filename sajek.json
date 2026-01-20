@@ -1,0 +1,191 @@
+{
+  "baseCosts": {
+    "busTicketUp": 1200,
+    "busTicketDown": 1200,
+    "activitiesPerPerson": 500
+  },
+  "destinations": {
+    "sajek": {
+      "center": [23.382, 92.2938],
+      "zoom": 13,
+      "resorts": [
+        {
+          "id": 201,
+          "name": "Meghpunji Resort",
+          "location": "Ruilui Para, Sajek Valley",
+          "contact": "+8801815-761065",
+          "email": "meghpunji@sajek.com",
+          "activities": ["Cloud View Swings", "Eco Cottages", "Premium View"],
+          "image": "https://images.unsplash.com/photo-1590055531615-f16d36ffe8ec?w=600&h=400&fit=crop",
+          "rating": 4.8,
+          "priceCouple": 6000,
+          "priceFamily": 9500,
+          "priceDorm": 0,
+          "lat": 23.3835,
+          "lng": 92.2945
+        },
+        {
+          "id": 202,
+          "name": "Ruilui Resort",
+          "location": "Ruilui Para, Sajek",
+          "contact": "+8801632-030000",
+          "email": "booking@ruiluiresort.com",
+          "activities": ["Wooden Cottages", "Sunrise View", "Restaurant"],
+          "image": "https://images.unsplash.com/photo-1542718610-a1d656d98845?w=600&h=400&fit=crop",
+          "rating": 4.6,
+          "priceCouple": 4500,
+          "priceFamily": 7500,
+          "priceDorm": 10000,
+          "lat": 23.3825,
+          "lng": 92.293
+        },
+        {
+          "id": 203,
+          "name": "Jumghor Eco Resort",
+          "location": "Near Helipad, Sajek",
+          "contact": "+8801884-208060",
+          "email": "jumghor@sajek.com",
+          "activities": ["Bamboo Cottage", "Traditional Vibe", "Sunset Point"],
+          "image": "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=600&h=400&fit=crop",
+          "rating": 4.5,
+          "priceCouple": 4000,
+          "priceFamily": 6500,
+          "priceDorm": 0,
+          "lat": 23.381,
+          "lng": 92.2925
+        },
+        {
+          "id": 204,
+          "name": "Sampari Resort",
+          "location": "Ruilui Para Entry",
+          "contact": "+8801849-889055",
+          "email": "sampari@sajek.com",
+          "activities": ["Mid-Range Luxury", "Garden", "Couple Friendly"],
+          "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop",
+          "rating": 4.3,
+          "priceCouple": 3500,
+          "priceFamily": 5500,
+          "priceDorm": 8000,
+          "lat": 23.385,
+          "lng": 92.2915
+        },
+        {
+          "id": 205,
+          "name": "Rock Paradise Resort",
+          "location": "Konglak Road, Sajek",
+          "contact": "+8801811-112233",
+          "email": "rockparadise@sajek.com",
+          "activities": ["Top View", "Campfire", "Budget Friendly"],
+          "image": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=400&fit=crop",
+          "rating": 4.1,
+          "priceCouple": 3000,
+          "priceFamily": 5000,
+          "priceDorm": 7000,
+          "lat": 23.387,
+          "lng": 92.296
+        }
+      ],
+      "itinerary": [
+        {
+          "day": "Day 0: Journey to Hills",
+          "items": [
+            {
+              "time": "10:00 PM",
+              "activity": "Bus from Dhaka to Khagrachari (Overnight)",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            }
+          ]
+        },
+        {
+          "day": "Day 1: The Cloud Kingdom",
+          "items": [
+            {
+              "time": "07:00 AM",
+              "activity": "Breakfast at Khagrachari",
+              "costActivity": 0,
+              "costFood": 150,
+              "costTransport": 0
+            },
+            {
+              "time": "08:00 AM",
+              "activity": "Chander Gari to Sajek (Army Escort)",
+              "costActivity": 50,
+              "costFood": 0,
+              "costTransport": 600
+            },
+            {
+              "time": "01:00 PM",
+              "activity": "Check-in & Lunch (Bamboo Chicken)",
+              "costActivity": 0,
+              "costFood": 450,
+              "costTransport": 0
+            },
+            {
+              "time": "04:30 PM",
+              "activity": "Sunset at Helipad",
+              "costActivity": 0,
+              "costFood": 50,
+              "costTransport": 0
+            },
+            {
+              "time": "08:30 PM",
+              "activity": "BBQ Dinner & Night Stroll",
+              "costActivity": 0,
+              "costFood": 600,
+              "costTransport": 0
+            }
+          ]
+        },
+        {
+          "day": "Day 2: Peaks & Caves",
+          "items": [
+            {
+              "time": "05:30 AM",
+              "activity": "Sunrise at Konglak Para (Highest Point)",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 100
+            },
+            {
+              "time": "08:30 AM",
+              "activity": "Breakfast & Checkout",
+              "costActivity": 0,
+              "costFood": 150,
+              "costTransport": 0
+            },
+            {
+              "time": "10:00 AM",
+              "activity": "Return Jeep to Khagrachari",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 600
+            },
+            {
+              "time": "01:30 PM",
+              "activity": "Lunch at System Restaurant",
+              "costActivity": 0,
+              "costFood": 400,
+              "costTransport": 0
+            },
+            {
+              "time": "03:00 PM",
+              "activity": "Alu Tila Cave & Risang Waterfall",
+              "costActivity": 100,
+              "costFood": 0,
+              "costTransport": 150
+            },
+            {
+              "time": "09:00 PM",
+              "activity": "Bus Return to Dhaka",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

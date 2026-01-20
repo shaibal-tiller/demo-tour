@@ -1,0 +1,194 @@
+{
+  "baseCosts": {
+    "busTicketUp": 800,
+    "busTicketDown": 800,
+    "activitiesPerPerson": 500
+  },
+  "destinations": {
+    "sreemangal": {
+      "center": [24.3065, 91.7296],
+      "zoom": 13,
+      "resorts": [
+        {
+          "id": 101,
+          "name": "Grand Sultan Tea Resort & Golf",
+          "location": "Radhanagar, Sreemangal",
+          "contact": "+8801730793501",
+          "email": "reservations@grandsultanresort.com",
+          "activities": [
+            "5-Star Luxury",
+            "Golf Course",
+            "3 Swimming Pools",
+            "Movie Theater"
+          ],
+          "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop",
+          "rating": 4.8,
+          "priceCouple": 22000,
+          "priceFamily": 35000,
+          "priceDorm": 0,
+          "lat": 24.3542,
+          "lng": 91.7485
+        },
+        {
+          "id": 102,
+          "name": "DuSai Resort & Spa",
+          "location": "Giashnagar, Sreemangal",
+          "contact": "+8801617005511",
+          "email": "info@dusairesorts.com",
+          "activities": [
+            "World Class Spa",
+            "Infinity Pool",
+            "Private Villas",
+            "Boating"
+          ],
+          "image": "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&h=400&fit=crop",
+          "rating": 4.7,
+          "priceCouple": 18000,
+          "priceFamily": 28000,
+          "priceDorm": 0,
+          "lat": 24.4291,
+          "lng": 91.7648
+        },
+        {
+          "id": 103,
+          "name": "Balishira Resort",
+          "location": "Radhanagar, Sreemangal",
+          "contact": "+8801766557780",
+          "email": "info@balishiraresort.com",
+          "activities": [
+            "Eco Friendly",
+            "Garden View",
+            "BBQ Zone",
+            "Swimming Pool"
+          ],
+          "image": "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=600&h=400&fit=crop",
+          "rating": 4.4,
+          "priceCouple": 8500,
+          "priceFamily": 14000,
+          "priceDorm": 20000,
+          "lat": 24.332,
+          "lng": 91.725
+        },
+        {
+          "id": 104,
+          "name": "Lemon Garden Resort",
+          "location": "Lawachara Road, Sreemangal",
+          "contact": "+8801779626330",
+          "email": "lemongardenresort@gmail.com",
+          "activities": ["Near Lawachara", "Lemon Orchards", "Hill View"],
+          "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop",
+          "rating": 4.2,
+          "priceCouple": 4500,
+          "priceFamily": 7500,
+          "priceDorm": 10000,
+          "lat": 24.325,
+          "lng": 91.78
+        },
+        {
+          "id": 105,
+          "name": "Tea Heaven Resort",
+          "location": "Sreemangal Town Outskirts",
+          "contact": "+8801700000000",
+          "email": "teaheaven@gmail.com",
+          "activities": ["Budget Friendly", "Tea Garden View", "Open Lawn"],
+          "image": "https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=600&h=400&fit=crop",
+          "rating": 3.9,
+          "priceCouple": 3000,
+          "priceFamily": 5000,
+          "priceDorm": 6000,
+          "lat": 24.295,
+          "lng": 91.72
+        }
+      ],
+      "itinerary": [
+        {
+          "day": "Day 1: Tea Gardens & Manipuri Culture",
+          "items": [
+            {
+              "time": "07:00 AM",
+              "activity": "Bus from Dhaka to Sreemangal",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            },
+            {
+              "time": "12:00 PM",
+              "activity": "Hotel Check-in & Freshen up",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            },
+            {
+              "time": "01:30 PM",
+              "activity": "Lunch at Panshi/Pach Bhai Restaurant (Vorta Platter)",
+              "costActivity": 0,
+              "costFood": 450,
+              "costTransport": 50
+            },
+            {
+              "time": "03:30 PM",
+              "activity": "Visit Finlay's Tea Estate & Seven Layer Tea Cabin",
+              "costActivity": 100,
+              "costFood": 150,
+              "costTransport": 200
+            },
+            {
+              "time": "06:00 PM",
+              "activity": "Manipuri Tribal Village & Shopping",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 100
+            },
+            {
+              "time": "09:00 PM",
+              "activity": "BBQ Dinner at Resort",
+              "costActivity": 0,
+              "costFood": 600,
+              "costTransport": 0
+            }
+          ]
+        },
+        {
+          "day": "Day 2: Nature & Wildlife",
+          "items": [
+            {
+              "time": "06:00 AM",
+              "activity": "Lawachara National Park (Wildlife Trekking)",
+              "costActivity": 150,
+              "costFood": 0,
+              "costTransport": 300
+            },
+            {
+              "time": "09:00 AM",
+              "activity": "Breakfast at Resort",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            },
+            {
+              "time": "11:00 AM",
+              "activity": "Madhabpur Lake (Lotus & Hills)",
+              "costActivity": 50,
+              "costFood": 0,
+              "costTransport": 200
+            },
+            {
+              "time": "02:00 PM",
+              "activity": "Lunch with Satkora Chicken (Sylheti Special)",
+              "costActivity": 0,
+              "costFood": 550,
+              "costTransport": 0
+            },
+            {
+              "time": "04:30 PM",
+              "activity": "Bus Return to Dhaka",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

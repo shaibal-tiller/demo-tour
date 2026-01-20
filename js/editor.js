@@ -81,12 +81,10 @@ function setupGlobalListeners() {
   document.getElementById("destLat").onchange = (e) =>
     (EditorState.get().destinations[EditorState.activeDestId].center[0] =
       parseFloat(e.target.value));
-
   document.getElementById("destLng").onchange = (e) =>
     (EditorState.get().destinations[EditorState.activeDestId].center[1] =
       parseFloat(e.target.value));
 
-  // Child Items (Resorts/Days)
   const addResortBtn = document.getElementById("addResortBtn");
   if (addResortBtn)
     addResortBtn.onclick = () => {
@@ -101,7 +99,6 @@ function setupGlobalListeners() {
       EditorUI.renderActiveEditor();
     };
 
-  // CSV/JSON Export/Import Logic ... (Same as before)
   const downloadResortCSV = document.getElementById("downloadResortCSV");
   if (downloadResortCSV) {
     downloadResortCSV.onclick = () => {
@@ -116,6 +113,8 @@ function setupGlobalListeners() {
         "lng",
         "rating",
         "activities",
+        "facebook",
+        "maps",
       ];
       const rows = [headers.join(",")];
       resorts.forEach((r) => {
@@ -128,6 +127,8 @@ function setupGlobalListeners() {
             r.lng,
             r.rating,
             `"${(r.activities || []).join(";")}"`,
+            r.facebook,
+            r.maps,
           ].join(","),
         );
       });
@@ -180,19 +181,18 @@ function setupGlobalListeners() {
     };
   }
 
-  // Custom Events
-  window.addEventListener("update-resort", (e) => {
-    EditorState.updateResort(e.detail.idx, e.detail.f, e.detail.v);
-  });
-  window.addEventListener("update-day", (e) => {
-    EditorState.updateDay(e.detail.idx, e.detail.f, e.detail.v);
-  });
-  window.addEventListener("update-item", (e) => {
+  window.addEventListener("update-resort", (e) =>
+    EditorState.updateResort(e.detail.idx, e.detail.f, e.detail.v),
+  );
+  window.addEventListener("update-day", (e) =>
+    EditorState.updateDay(e.detail.idx, e.detail.f, e.detail.v),
+  );
+  window.addEventListener("update-item", (e) =>
     EditorState.updateItem(
       e.detail.dIdx,
       e.detail.iIdx,
       e.detail.f,
       e.detail.v,
-    );
-  });
+    ),
+  );
 }

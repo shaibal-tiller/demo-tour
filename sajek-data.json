@@ -1,0 +1,464 @@
+{
+  "baseCosts": {
+    "busTicketUp": 1200,
+    "busTicketDown": 1200,
+    "activitiesPerPerson": 500
+  },
+  "destinations": {
+    "sajek": {
+      "center": [23.382, 92.2938],
+      "zoom": 14,
+      "resorts": [
+        {
+          "id": 201,
+          "name": "Meghpunji Resort",
+          "location": "Ruilui Para, Sajek",
+          "contact": "01815-761065",
+          "email": "meghpunjiresort@gmail.com",
+          "facebook": "https://www.facebook.com/MeghpunjiResort",
+          "maps": "https://goo.gl/maps/MeghpunjiSajek",
+          "rating": 4.8,
+          "image": "https://images.unsplash.com/photo-1590055531615-f16d36ffe8ec?w=600&h=400&fit=crop",
+          "priceCouple": 6000,
+          "priceFamily": 8500,
+          "priceDorm": 0,
+          "activities": ["Infinity Swing", "Cloud View", "Eco Cottages"],
+          "lat": 23.3835,
+          "lng": 92.2945
+        },
+        {
+          "id": 202,
+          "name": "Runmoy Resort (Army)",
+          "location": "Sajek Main Road",
+          "contact": "01862-011852",
+          "email": "runmoy@army.bd",
+          "facebook": "https://www.facebook.com/RunmoySajek",
+          "maps": "https://goo.gl/maps/RunmoySajek",
+          "rating": 4.9,
+          "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop",
+          "priceCouple": 10000,
+          "priceFamily": 15000,
+          "priceDorm": 0,
+          "activities": ["Luxury", "Army Managed", "Best View"],
+          "lat": 23.385,
+          "lng": 92.296
+        },
+        {
+          "id": 203,
+          "name": "Khasrang Hill Resort",
+          "location": "Konglak Road, Sajek",
+          "contact": "01838-049742",
+          "email": "booking@khasrang.com",
+          "facebook": "https://www.facebook.com/KhasrangHillResort",
+          "maps": "https://goo.gl/maps/KhasrangSajek",
+          "rating": 4.7,
+          "image": "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&h=400&fit=crop",
+          "priceCouple": 12000,
+          "priceFamily": 16000,
+          "priceDorm": 0,
+          "activities": [
+            "Premium Wooden Decor",
+            "Sunrise Point",
+            "VIP Service"
+          ],
+          "lat": 23.388,
+          "lng": 92.298
+        },
+        {
+          "id": 204,
+          "name": "PushpoKunjo Resort",
+          "location": "Ruilui Para, Sajek",
+          "contact": "01407-664600",
+          "email": "pushpokunjo@sajek.com",
+          "facebook": "https://www.facebook.com/pushpokunjo",
+          "maps": "https://goo.gl/maps/PushpoKunjoSajek",
+          "rating": 4.6,
+          "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop",
+          "priceCouple": 6500,
+          "priceFamily": 9000,
+          "priceDorm": 0,
+          "activities": ["Flower Garden", "Valley View", "Couple Friendly"],
+          "lat": 23.384,
+          "lng": 92.293
+        },
+        {
+          "id": 205,
+          "name": "Rock Paradise Resort",
+          "location": "Konglak Road, Sajek",
+          "contact": "01821-626749",
+          "email": "rockparadise@sajek.com",
+          "facebook": "https://www.facebook.com/RockParadiseSajek",
+          "maps": "https://goo.gl/maps/RockParadiseSajek",
+          "rating": 4.4,
+          "image": "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=600&h=400&fit=crop",
+          "priceCouple": 5000,
+          "priceFamily": 7500,
+          "priceDorm": 10000,
+          "activities": ["Campfire", "High Altitude", "Music"],
+          "lat": 23.3865,
+          "lng": 92.2955
+        },
+        {
+          "id": 206,
+          "name": "Ruilui Resort",
+          "location": "Ruilui Para Centre",
+          "contact": "01632-030000",
+          "email": "info@ruiluiresort.com",
+          "facebook": "https://www.facebook.com/RuiluiResort",
+          "maps": "https://goo.gl/maps/RuiluiResort",
+          "rating": 4.5,
+          "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop",
+          "priceCouple": 4500,
+          "priceFamily": 6500,
+          "priceDorm": 9000,
+          "activities": [
+            "Wooden Architecture",
+            "Central Location",
+            "Restaurant"
+          ],
+          "lat": 23.3825,
+          "lng": 92.294
+        },
+        {
+          "id": 207,
+          "name": "Megh Pahar Eco Resort",
+          "location": "Sajek Valley Entry",
+          "contact": "01911-060900",
+          "email": "booking@sofhortourism.com",
+          "facebook": "https://www.facebook.com/MeghPaharSajek",
+          "maps": "https://goo.gl/maps/MeghPahar",
+          "rating": 4.3,
+          "image": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=400&fit=crop",
+          "priceCouple": 4500,
+          "priceFamily": 6000,
+          "priceDorm": 8000,
+          "activities": ["Budget Luxury", "Group Friendly", "BBQ"],
+          "lat": 23.381,
+          "lng": 92.292
+        },
+        {
+          "id": 208,
+          "name": "Jumghor Eco Resort",
+          "location": "Near Helipad",
+          "contact": "01884-208060",
+          "email": "jumghor@sajek.com",
+          "facebook": "https://www.facebook.com/JumghorEcoResort",
+          "maps": "https://goo.gl/maps/JumghorSajek",
+          "rating": 4.5,
+          "image": "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&h=400&fit=crop",
+          "priceCouple": 4000,
+          "priceFamily": 6500,
+          "priceDorm": 0,
+          "activities": ["Bamboo Cottages", "Tribal Experience", "Sunset View"],
+          "lat": 23.382,
+          "lng": 92.2925
+        },
+        {
+          "id": 209,
+          "name": "Sampari Resort",
+          "location": "Ruilui Para",
+          "contact": "01849-889055",
+          "email": "sampari@sajek.com",
+          "facebook": "https://www.facebook.com/SampariResortSajek",
+          "maps": "https://goo.gl/maps/SampariResort",
+          "rating": 4.2,
+          "image": "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600&h=400&fit=crop",
+          "priceCouple": 3500,
+          "priceFamily": 5500,
+          "priceDorm": 7500,
+          "activities": ["Garden", "Family Friendly", "Restaurant"],
+          "lat": 23.383,
+          "lng": 92.2935
+        },
+        {
+          "id": 210,
+          "name": "Meghadree Eco Resort",
+          "location": "Sajek Valley",
+          "contact": "01883-697728",
+          "email": "meghadree@sajek.com",
+          "facebook": "https://www.facebook.com/meghadreeecoresort",
+          "maps": "https://goo.gl/maps/MeghadreeSajek",
+          "rating": 4.2,
+          "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop",
+          "priceCouple": 3500,
+          "priceFamily": 5000,
+          "priceDorm": 7000,
+          "activities": ["Hill View", "Budget Friendly", "Open Terrace"],
+          "lat": 23.3815,
+          "lng": 92.291
+        },
+        {
+          "id": 211,
+          "name": "Kadambini Eco Resort",
+          "location": "Ruilui Para",
+          "contact": "01611-934793",
+          "email": "kadambini@sajek.com",
+          "facebook": "https://www.facebook.com/KadambiniSajek",
+          "maps": "https://goo.gl/maps/Kadambini",
+          "rating": 4.4,
+          "image": "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&h=400&fit=crop",
+          "priceCouple": 4000,
+          "priceFamily": 6000,
+          "priceDorm": 0,
+          "activities": ["Eco Friendly", "Wooden Balcony", "Peaceful"],
+          "lat": 23.3828,
+          "lng": 92.2942
+        },
+        {
+          "id": 212,
+          "name": "Megh Kabbo Hilltop",
+          "location": "Ruilui Para Top",
+          "contact": "01860-452766",
+          "email": "meghkabbo.cottage@gmail.com",
+          "facebook": "https://www.facebook.com/MeghKabboSajek",
+          "maps": "https://goo.gl/maps/MeghKabbo",
+          "rating": 4.1,
+          "image": "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&h=400&fit=crop",
+          "priceCouple": 3500,
+          "priceFamily": 5500,
+          "priceDorm": 7500,
+          "activities": ["Hilltop View", "Budget Options", "Group Rooms"],
+          "lat": 23.3845,
+          "lng": 92.295
+        },
+        {
+          "id": 213,
+          "name": "Fodang Thang Resort",
+          "location": "Ruilui Para Entry",
+          "contact": "01849-779050",
+          "email": "fodangthang@sajek.com",
+          "facebook": "https://www.facebook.com/FodangThangResort",
+          "maps": "https://goo.gl/maps/FodangThang",
+          "rating": 4.6,
+          "image": "https://images.unsplash.com/photo-1570213489059-0ecd66332513?w=600&h=400&fit=crop",
+          "priceCouple": 4500,
+          "priceFamily": 6500,
+          "priceDorm": 0,
+          "activities": ["Mizoram View", "Modern Amenities", "Cafe"],
+          "lat": 23.3805,
+          "lng": 92.2905
+        },
+        {
+          "id": 214,
+          "name": "Madventure Resort",
+          "location": "Stone Garden Area",
+          "contact": "01885-424242",
+          "email": "madventure@sajek.com",
+          "facebook": "https://www.facebook.com/MadventureResort",
+          "maps": "https://goo.gl/maps/Madventure",
+          "rating": 4.4,
+          "image": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=600&h=400&fit=crop",
+          "priceCouple": 4000,
+          "priceFamily": 6000,
+          "priceDorm": 0,
+          "activities": ["Adventure Vibe", "Sunset Point", "Cafe"],
+          "lat": 23.3812,
+          "lng": 92.2918
+        },
+        {
+          "id": 215,
+          "name": "Chayanir Eco Resort",
+          "location": "Sajek Valley",
+          "contact": "01897-711277",
+          "email": "chayanir@sajek.com",
+          "facebook": "https://www.facebook.com/ChayanirEcoResort",
+          "maps": "https://goo.gl/maps/Chayanir",
+          "rating": 4.0,
+          "image": "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=600&h=400&fit=crop",
+          "priceCouple": 3000,
+          "priceFamily": 5000,
+          "priceDorm": 7000,
+          "activities": ["Budget Friendly", "Clean Rooms", "Basic Amenities"],
+          "lat": 23.3832,
+          "lng": 92.2928
+        },
+        {
+          "id": 216,
+          "name": "Lushai Cottage",
+          "location": "Ruilui Para",
+          "contact": "01634-198005",
+          "email": "lushai@sajek.com",
+          "facebook": "https://www.facebook.com/LushaiCottage",
+          "maps": "https://goo.gl/maps/LushaiCottage",
+          "rating": 4.1,
+          "image": "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=600&h=400&fit=crop",
+          "priceCouple": 2500,
+          "priceFamily": 4500,
+          "priceDorm": 6000,
+          "activities": ["Cultural Stay", "Budget Friendly", "Local Food"],
+          "lat": 23.384,
+          "lng": 92.2938
+        },
+        {
+          "id": 217,
+          "name": "Monghor Resort",
+          "location": "Ruilui Para",
+          "contact": "01844-217301",
+          "email": "monghor@sajek.com",
+          "facebook": "https://www.facebook.com/MonghorResort",
+          "maps": "https://goo.gl/maps/Monghor",
+          "rating": 4.2,
+          "image": "https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=600&h=400&fit=crop",
+          "priceCouple": 3500,
+          "priceFamily": 5500,
+          "priceDorm": 7500,
+          "activities": ["Traditional Hut", "Valley View", "Open Deck"],
+          "lat": 23.3822,
+          "lng": 92.2932
+        },
+        {
+          "id": 218,
+          "name": "Abakash Eco Cottage",
+          "location": "Ruilui Para",
+          "contact": "01844-172492",
+          "email": "abakash@sajek.com",
+          "facebook": "https://www.facebook.com/AbakashSajek",
+          "maps": "https://goo.gl/maps/Abakash",
+          "rating": 4.0,
+          "image": "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=600&h=400&fit=crop",
+          "priceCouple": 3000,
+          "priceFamily": 5000,
+          "priceDorm": 7000,
+          "activities": ["Group Friendly", "Basic Stay", "Center Location"],
+          "lat": 23.3838,
+          "lng": 92.2948
+        },
+        {
+          "id": 219,
+          "name": "Niribili Eco Resort",
+          "location": "Ruilui Para",
+          "contact": "01897-984440",
+          "email": "booking.niribili@gmail.com",
+          "facebook": "https://www.facebook.com/NiribiliSajek",
+          "maps": "https://goo.gl/maps/NiribiliSajek",
+          "rating": 4.3,
+          "image": "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=600&h=400&fit=crop",
+          "priceCouple": 3500,
+          "priceFamily": 5500,
+          "priceDorm": 8000,
+          "activities": ["Quiet Zone", "Nature View", "Family Rooms"],
+          "lat": 23.3818,
+          "lng": 92.2912
+        },
+        {
+          "id": 220,
+          "name": "Sajek Hill View Resort",
+          "location": "Sajek Main Road",
+          "contact": "01878-745843",
+          "email": "hillview@sajek.com",
+          "facebook": "https://www.facebook.com/SajekHillView",
+          "maps": "https://goo.gl/maps/SajekHillView",
+          "rating": 4.2,
+          "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop",
+          "priceCouple": 4000,
+          "priceFamily": 6000,
+          "priceDorm": 8500,
+          "activities": ["Hill View", "Restaurant", "Parking"],
+          "lat": 23.3842,
+          "lng": 92.2952
+        }
+      ],
+      "itinerary": [
+        {
+          "day": "Day 0: Journey to Hills",
+          "items": [
+            {
+              "time": "10:00 PM",
+              "activity": "Bus from Dhaka to Khagrachari (Overnight)",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            }
+          ]
+        },
+        {
+          "day": "Day 1: The Cloud Kingdom",
+          "items": [
+            {
+              "time": "07:00 AM",
+              "activity": "Breakfast at Khagrachari",
+              "costActivity": 0,
+              "costFood": 150,
+              "costTransport": 0
+            },
+            {
+              "time": "08:00 AM",
+              "activity": "Chander Gari to Sajek (Army Escort)",
+              "costActivity": 50,
+              "costFood": 0,
+              "costTransport": 600
+            },
+            {
+              "time": "01:00 PM",
+              "activity": "Check-in & Lunch (Bamboo Chicken)",
+              "costActivity": 0,
+              "costFood": 450,
+              "costTransport": 0
+            },
+            {
+              "time": "04:30 PM",
+              "activity": "Sunset at Helipad",
+              "costActivity": 0,
+              "costFood": 50,
+              "costTransport": 0
+            },
+            {
+              "time": "08:30 PM",
+              "activity": "BBQ Dinner & Night Stroll",
+              "costActivity": 0,
+              "costFood": 600,
+              "costTransport": 0
+            }
+          ]
+        },
+        {
+          "day": "Day 2: Peaks & Caves",
+          "items": [
+            {
+              "time": "05:30 AM",
+              "activity": "Sunrise at Konglak Para (Highest Point)",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 100
+            },
+            {
+              "time": "08:30 AM",
+              "activity": "Breakfast & Checkout",
+              "costActivity": 0,
+              "costFood": 150,
+              "costTransport": 0
+            },
+            {
+              "time": "10:00 AM",
+              "activity": "Return Jeep to Khagrachari",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 600
+            },
+            {
+              "time": "01:30 PM",
+              "activity": "Lunch at System Restaurant",
+              "costActivity": 0,
+              "costFood": 400,
+              "costTransport": 0
+            },
+            {
+              "time": "03:00 PM",
+              "activity": "Alu Tila Cave & Risang Waterfall",
+              "costActivity": 100,
+              "costFood": 0,
+              "costTransport": 150
+            },
+            {
+              "time": "09:00 PM",
+              "activity": "Bus Return to Dhaka",
+              "costActivity": 0,
+              "costFood": 0,
+              "costTransport": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

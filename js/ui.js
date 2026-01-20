@@ -11,7 +11,6 @@ export const UI = {
       const select = document.createElement("select");
       select.className =
         "w-full appearance-none bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 px-4 pr-8 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500";
-
       destinations.forEach((dest) => {
         const option = document.createElement("option");
         option.value = dest;
@@ -50,7 +49,6 @@ export const UI = {
         "<p class='text-gray-500 italic'>No itinerary details available.</p>";
       return;
     }
-
     container.innerHTML = itinerary
       .map(
         (day, idx) => `
@@ -99,14 +97,11 @@ export const UI = {
       parseInt(document.getElementById("familyRooms").value) || 0;
     const dormRooms = parseInt(document.getElementById("dormRooms").value) || 0;
 
-    // 1. Bus
     const bc = tourData.baseCosts || {};
     const busUp = parseInt(bc.busTicketUp) || 0;
     const busDown = parseInt(bc.busTicketDown) || 0;
     const totalBusCost = (busUp + busDown) * people;
 
-    // 2. Accommodation
-    // Default prices if no resort selected
     let pCouple = 5000,
       pFamily = 8000,
       pDorm = 12000;
@@ -117,13 +112,11 @@ export const UI = {
       pDorm = selectedResort.priceDorm || Math.round(pCouple * 2.5);
     }
 
-    // 2 nights default multiplier
     const accommodation =
       coupleRooms * pCouple * 2 +
       familyRooms * pFamily * 2 +
       dormRooms * pDorm * 2;
 
-    // 3. Itinerary Totals (Food, Transport, Activities)
     const currentDest = tourData.destinations[currentDestKey];
     let sumFood = 0,
       sumTrans = 0,
@@ -139,19 +132,16 @@ export const UI = {
       });
     }
 
-    // Add global activity fallback if granular activity cost is 0
     const globalAct = bc.activitiesPerPerson || 0;
     if (sumAct === 0 && globalAct > 0) sumAct = globalAct;
 
     const totalFood = sumFood * people;
     const totalTrans = sumTrans * people;
     const totalAct = sumAct * people;
-
     const total =
       totalBusCost + accommodation + totalFood + totalTrans + totalAct;
     const perPerson = people > 0 ? Math.round(total / people) : 0;
 
-    // DOM Updates
     document.getElementById("totalRooms").textContent =
       coupleRooms + familyRooms + dormRooms;
     if (selectedResort) {
@@ -168,12 +158,10 @@ export const UI = {
                     </div>
                     <span class="font-bold text-gray-800">BDT ${totalBusCost.toLocaleString()}</span>
                 </div>
-
                 <div class="flex justify-between p-4 bg-gray-50 rounded-xl">
                     <span class="font-medium text-gray-700">Accommodation (2 Nights)</span>
                     <span class="font-bold text-gray-800">BDT ${accommodation.toLocaleString()}</span>
                 </div>
-
                 <div class="flex justify-between p-4 bg-gray-50 rounded-xl">
                     <div class="flex flex-col">
                         <span class="font-medium text-gray-700">Food</span>
@@ -181,7 +169,6 @@ export const UI = {
                     </div>
                     <span class="font-bold text-gray-800">BDT ${totalFood.toLocaleString()}</span>
                 </div>
-                
                  <div class="flex justify-between p-4 bg-gray-50 rounded-xl">
                     <div class="flex flex-col">
                         <span class="font-medium text-gray-700">Transport (Local)</span>
@@ -189,7 +176,6 @@ export const UI = {
                     </div>
                     <span class="font-bold text-gray-800">BDT ${totalTrans.toLocaleString()}</span>
                 </div>
-
                 <div class="flex justify-between p-4 bg-gray-50 rounded-xl">
                     <div class="flex flex-col">
                          <span class="font-medium text-gray-700">Entry & Activities</span>
@@ -197,7 +183,6 @@ export const UI = {
                     </div>
                     <span class="font-bold text-gray-800">BDT ${totalAct.toLocaleString()}</span>
                 </div>
-
                 <div class="bg-gradient-to-r from-cyan-600 to-teal-600 rounded-xl p-4 text-white shadow-lg">
                     <div class="flex justify-between mb-2">
                         <span class="text-lg font-bold">TOTAL PACKAGE</span>
@@ -218,15 +203,30 @@ export const UI = {
     document.getElementById("resortLocation").textContent = resort.location;
     document.getElementById("resortContact").textContent =
       resort.contact || "N/A";
+    document.getElementById("resortContact").href = resort.contact
+      ? `tel:${resort.contact}`
+      : "#";
     document.getElementById("resortEmail").textContent = resort.email || "N/A";
-    document.getElementById("resortActivities").innerHTML = (
-      resort.activities || []
-    )
+    document.getElementById("resortEmail").href = resort.email
+      ? `mailto:${resort.email}`
+      : "#";
+
+    const socialContainer = document.getElementById("resortActivities");
+    let linksHtml = "";
+    if (resort.facebook)
+      linksHtml += `<a href="${resort.facebook}" target="_blank" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200 hover:bg-blue-100 flex items-center gap-1">Facebook</a>`;
+    if (resort.maps)
+      linksHtml += `<a href="${resort.maps}" target="_blank" class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-200 hover:bg-green-100 flex items-center gap-1">Google Maps</a>`;
+
+    const activitiesHtml = (resort.activities || [])
       .map(
         (act) =>
           `<span class="px-3 py-1 bg-white rounded-full text-xs font-medium text-emerald-700 border border-emerald-200">${act}</span>`,
       )
       .join("");
+    document.getElementById("resortActivities").innerHTML =
+      `<div class="flex gap-2 mb-2">${linksHtml}</div>` + activitiesHtml;
+
     if (window.innerWidth < 768) details.scrollIntoView({ behavior: "smooth" });
   },
 
