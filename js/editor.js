@@ -1,8 +1,8 @@
-import { EditorState } from "./js/editor-state.js";
-import { EditorUI } from "./js/editor-ui.js";
-import { EditorMap } from "./js/editor-map.js";
-import { showToast } from "./js/utils.js";
-import { DataService } from "./js/data.js";
+import { EditorState } from './editor-state.js';
+import { EditorUI } from './editor-ui.js';
+import { EditorMap } from './editor-map.js';
+import { showToast } from './utils.js';
+import { DataService } from './data.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   // 1. Initialize State
