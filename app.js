@@ -2,43 +2,268 @@ let map;
 let markers = [];
 let currentDestination = "";
 let selectedResort = null;
-let tourData = null; // Data will be loaded here
+let tourData = null;
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
-  loadData();
+  attachDataControls(); // Attach widget controls immediately
+  loadData(); // Then load data
+  attachGlobalListeners();
 });
+
+// --- Toast Notification System ---
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+
+  // Toast Styles
+  const baseClasses =
+    "flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg transform transition-all duration-300 translate-x-full opacity-0 max-w-sm pointer-events-auto border-l-4";
+  let typeClasses = "";
+  let icon = "";
+
+  if (type === "success") {
+    typeClasses = "bg-white text-gray-800 border-emerald-500";
+    icon = `<svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+  } else if (type === "error") {
+    typeClasses = "bg-white text-gray-800 border-red-500";
+    icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+  } else if (type === "warning") {
+    typeClasses = "bg-white text-gray-800 border-orange-500";
+    icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+  } else {
+    typeClasses = "bg-white text-gray-800 border-blue-500";
+    icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+  }
+
+  toast.className = `${baseClasses} ${typeClasses}`;
+  toast.innerHTML = `
+        <div class="shrink-0">${icon}</div>
+        <p class="text-sm font-medium">${message}</p>
+    `;
+
+  container.appendChild(toast);
+
+  // Animate In
+  requestAnimationFrame(() => {
+    toast.classList.remove("translate-x-full", "opacity-0");
+  });
+
+  // Auto Dismiss
+  setTimeout(() => {
+    toast.classList.add("translate-x-full", "opacity-0");
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
 
 async function loadData() {
   try {
-    const response = await fetch("./data.json");
-    if (!response.ok) throw new Error("Could not load data.json");
+    // 1. Check LocalStorage first
+    const localData = localStorage.getItem("tourData");
+    const filename = localStorage.getItem("tourDataFilename");
 
-    tourData = await response.json();
-
-    // Set default destination to the first key found in data
-    const destinations = Object.keys(tourData.destinations);
-    if (destinations.length > 0) {
-      currentDestination = destinations[0];
-
-      // Initialize the app parts
-      renderDestinationTabs(destinations);
-      initMap();
-      renderItinerary();
-      updateCosts();
-      attachGlobalListeners();
+    if (localData) {
+      tourData = JSON.parse(localData);
+      showToast(`Loaded from Local: ${filename || "Custom Data"}`, "success");
+      showStorageIndicator(true, filename);
+      initAppWithData();
     } else {
-      console.error("No destinations found in data.json");
+      // 2. Fallback to default data.json
+      const response = await fetch("./data.json");
+      if (!response.ok) throw new Error("Could not load data.json");
+      tourData = await response.json();
+
+      showToast("Loaded default data from Online", "info");
+      showStorageIndicator(false);
+      initAppWithData();
     }
   } catch (error) {
     console.error("Error loading tour data:", error);
-    alert("Failed to load tour data. Please check console.");
+    showToast("Failed to load data. Please check console.", "error");
   }
 }
 
+function initAppWithData() {
+  if (!tourData || !tourData.destinations) {
+    showToast("Data appears invalid or empty.", "error");
+    return;
+  }
+
+  const destinations = Object.keys(tourData.destinations);
+  if (destinations.length > 0) {
+    // Check if current destination still exists in new data, else reset
+    if (!currentDestination || !tourData.destinations[currentDestination]) {
+      currentDestination = destinations[0];
+    }
+
+    renderDestinationTabs(destinations);
+    initMap();
+    renderItinerary();
+    updateCosts();
+  } else {
+    showToast("No destinations found in data.", "warning");
+  }
+}
+
+// --- Data Control Widget Logic ---
+
+function attachDataControls() {
+  const toggleBtn = document.getElementById("dataWidgetToggle");
+  const content = document.getElementById("dataWidgetContent");
+  const fileInput = document.getElementById("fileUpload");
+  const resetBtn = document.getElementById("resetDataBtn");
+  let isExpanded = false;
+
+  // Toggle Animation
+  toggleBtn.addEventListener("click", () => {
+    isExpanded = !isExpanded;
+    if (isExpanded) {
+      content.classList.remove(
+        "translate-y-10",
+        "opacity-0",
+        "pointer-events-none",
+      );
+      toggleBtn.classList.add("rotate-180", "bg-emerald-800");
+    } else {
+      content.classList.add(
+        "translate-y-10",
+        "opacity-0",
+        "pointer-events-none",
+      );
+      toggleBtn.classList.remove("rotate-180", "bg-emerald-800");
+    }
+  });
+
+  // File Upload Handler
+  fileInput.addEventListener("change", handleFileUpload);
+
+  // Reset Handler
+  resetBtn.addEventListener("click", resetToDefault);
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    const content = e.target.result;
+
+    try {
+      let newData;
+
+      if (file.name.endsWith(".csv")) {
+        newData = parseCSVtoData(content);
+      } else {
+        newData = JSON.parse(content);
+      }
+
+      // Simple validation
+      if (!newData.destinations && !newData.baseCosts) {
+        throw new Error("Invalid data structure");
+      }
+
+      // Save
+      localStorage.setItem("tourData", JSON.stringify(newData));
+      localStorage.setItem("tourDataFilename", file.name); // Save filename
+
+      // Re-initialize without reload
+      tourData = newData;
+      showToast(`Loaded ${file.name} successfully!`, "success");
+      showStorageIndicator(true, file.name);
+      initAppWithData();
+    } catch (err) {
+      console.error(err);
+      showToast("Error parsing file: " + err.message, "error");
+    }
+
+    // Clear input so same file can be selected again if needed
+    event.target.value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+function resetToDefault() {
+  localStorage.removeItem("tourData");
+  localStorage.removeItem("tourDataFilename");
+  showToast("Clearing local data...", "warning");
+
+  // Reload data from online
+  loadData();
+}
+
+function showStorageIndicator(isCustom, filename = "") {
+  const el = document.getElementById("storageIndicator");
+  const msg = document.getElementById("storageMsg");
+
+  if (isCustom) {
+    el.classList.remove("hidden");
+    msg.textContent = `Using: ${filename || "Custom Data"}`;
+  } else {
+    el.classList.add("hidden");
+  }
+}
+
+// --- CSV Helper (Same as before) ---
+function parseCSVtoData(csvText) {
+  const lines = csvText.split("\n").filter((l) => l.trim());
+  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+
+  const resorts = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i].split(",");
+    if (row.length < headers.length) continue;
+
+    let resort = { id: i, activities: [] };
+
+    headers.forEach((header, index) => {
+      const val = row[index] ? row[index].trim() : "";
+
+      if (header.includes("price"))
+        resort.pricePerNight = parseInt(val) || 5000;
+      else if (header.includes("lat")) resort.lat = parseFloat(val);
+      else if (header.includes("lng")) resort.lng = parseFloat(val);
+      else if (header.includes("rating")) resort.rating = parseFloat(val);
+      else if (header.includes("activities"))
+        resort.activities = val.split(";").map((s) => s.trim());
+      else resort[header] = val;
+    });
+
+    if (!resort.lat) resort.lat = 22.2;
+    if (!resort.lng) resort.lng = 92.2;
+    if (!resort.image)
+      resort.image =
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&h=100&fit=crop";
+
+    resorts.push(resort);
+  }
+
+  return {
+    baseCosts: { bus: 50000, foodPerPerson: 2000, activitiesPerPerson: 1000 },
+    destinations: {
+      "custom-import": {
+        center: [resorts[0]?.lat || 22.2, resorts[0]?.lng || 92.2],
+        zoom: 10,
+        resorts: resorts,
+        itinerary: [
+          {
+            day: "Day 1",
+            items: [{ time: "10 AM", activity: "Custom Tour Start" }],
+          },
+        ],
+      },
+    },
+  };
+}
+
+// --- Core UI Logic (Rendering & Listeners) ---
+
 function renderDestinationTabs(destinations) {
   const container = document.getElementById("destination-tabs");
-  container.innerHTML = ""; // Clear existing
+  container.innerHTML = "";
 
   destinations.forEach((destKey) => {
     const btn = document.createElement("button");
@@ -46,11 +271,9 @@ function renderDestinationTabs(destinations) {
     btn.id = `tab-${destKey}`;
     btn.onclick = () => switchDestination(destKey);
 
-    // Base Classes
     btn.className =
       "flex-1 py-3 px-4 rounded-xl font-semibold transition-all whitespace-nowrap min-w-[120px]";
 
-    // Apply Active/Inactive styles
     if (destKey === currentDestination) {
       btn.classList.add("tab-active", "text-white");
     } else {
@@ -64,11 +287,8 @@ function renderDestinationTabs(destinations) {
 function switchDestination(dest) {
   if (!tourData.destinations[dest]) return;
   currentDestination = dest;
-
-  // Re-render tabs to update styling (Active vs Inactive)
   renderDestinationTabs(Object.keys(tourData.destinations));
 
-  // Logic to switch map and data
   const destData = tourData.destinations[dest];
   map.setView(destData.center, destData.zoom);
 
@@ -79,9 +299,13 @@ function switchDestination(dest) {
   updateCosts();
 }
 
-// Map Logic
 function initMap() {
   if (!tourData || !currentDestination) return;
+
+  if (map) {
+    map.remove();
+    map = null;
+  }
 
   const dest = tourData.destinations[currentDestination];
   map = L.map("map").setView(dest.center, dest.zoom);
@@ -113,7 +337,7 @@ function loadMarkers() {
             <div class="text-center p-1">
                 <strong class="text-emerald-800">${resort.name}</strong><br>
                 <span class="text-xs text-gray-600">${resort.location}</span><br>
-                <span class="text-yellow-500 font-bold">★ ${resort.rating}</span>
+                <span class="text-yellow-500 font-bold">★ ${resort.rating || 4.0}</span>
             </div>
         `);
 
@@ -130,27 +354,27 @@ function selectResort(resort) {
 
   document.getElementById("resortName").textContent = resort.name;
   document.getElementById("resortLocation").textContent = resort.location;
-  document.getElementById("resortContact").textContent = resort.contact;
-  document.getElementById("resortContact").href = `tel:${resort.contact}`;
-  document.getElementById("resortEmail").textContent = resort.email;
-  document.getElementById("resortEmail").href = `mailto:${resort.email}`;
+  document.getElementById("resortContact").textContent =
+    resort.contact || "N/A";
+  document.getElementById("resortContact").href = `tel:${resort.contact || ""}`;
+  document.getElementById("resortEmail").textContent = resort.email || "N/A";
+  document.getElementById("resortEmail").href = `mailto:${resort.email || ""}`;
 
-  // Render Rating
+  const rating = resort.rating || 4.5;
   const ratingHtml = Array(5)
     .fill(0)
     .map(
       (_, i) =>
-        `<svg class="w-4 h-4 ${i < Math.floor(resort.rating) ? "fill-current" : ""}" stroke="currentColor" viewBox="0 0 24 24">
+        `<svg class="w-4 h-4 ${i < Math.floor(rating) ? "fill-current" : ""}" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
         </svg>`,
     )
     .join("");
   document.getElementById("resortRating").innerHTML =
-    ratingHtml +
-    `<span class="text-sm font-semibold ml-1">${resort.rating}</span>`;
+    ratingHtml + `<span class="text-sm font-semibold ml-1">${rating}</span>`;
 
-  // Render Activities
-  const activitiesHtml = resort.activities
+  const acts = resort.activities || [];
+  const activitiesHtml = acts
     .map(
       (activity) =>
         `<span class="px-3 py-1 bg-white rounded-full text-xs font-medium text-emerald-700 border border-emerald-200">${activity}</span>`,
@@ -159,7 +383,6 @@ function selectResort(resort) {
   document.getElementById("resortActivities").innerHTML = activitiesHtml;
 
   updateCosts();
-
   if (window.innerWidth < 768) {
     details.scrollIntoView({ behavior: "smooth" });
   }
@@ -172,7 +395,6 @@ function closeResortDetails() {
 }
 
 function attachGlobalListeners() {
-  // People Counter
   document
     .getElementById("people-minus")
     .addEventListener("click", () => changePeople(-1));
@@ -183,7 +405,6 @@ function attachGlobalListeners() {
     .getElementById("totalPeople")
     .addEventListener("change", updateRoomConfig);
 
-  // Couple Rooms Counter
   document
     .getElementById("couple-minus")
     .addEventListener("click", () => changeRooms("couple", -1));
@@ -194,7 +415,6 @@ function attachGlobalListeners() {
     .getElementById("coupleRooms")
     .addEventListener("change", updateFromRooms);
 
-  // Family Rooms Counter
   document
     .getElementById("family-minus")
     .addEventListener("click", () => changeRooms("family", -1));
@@ -205,13 +425,11 @@ function attachGlobalListeners() {
     .getElementById("familyRooms")
     .addEventListener("change", updateFromRooms);
 
-  // Close Resort Details
   document
     .getElementById("closeResortBtn")
     .addEventListener("click", closeResortDetails);
 }
 
-// Logic Functions
 function changePeople(delta) {
   const input = document.getElementById("totalPeople");
   const newValue = Math.max(1, parseInt(input.value) + delta);
@@ -230,7 +448,6 @@ function updateRoomConfig() {
   const people = parseInt(document.getElementById("totalPeople").value);
   const coupleRooms = parseInt(document.getElementById("coupleRooms").value);
   const familyRooms = parseInt(document.getElementById("familyRooms").value);
-
   const totalRooms = coupleRooms + familyRooms;
   document.getElementById("totalRooms").textContent = totalRooms;
   updateCosts();
@@ -240,15 +457,14 @@ function updateFromRooms() {
   const coupleRooms = parseInt(document.getElementById("coupleRooms").value);
   const familyRooms = parseInt(document.getElementById("familyRooms").value);
   const totalPeople = coupleRooms * 2 + familyRooms * 4;
-
   document.getElementById("totalPeople").value = totalPeople;
   document.getElementById("totalRooms").textContent = coupleRooms + familyRooms;
   updateCosts();
 }
 
 function renderItinerary() {
-  if (!tourData) return;
-  const itinerary = tourData.destinations[currentDestination].itinerary;
+  if (!tourData || !tourData.destinations[currentDestination]) return;
+  const itinerary = tourData.destinations[currentDestination].itinerary || [];
   const container = document.getElementById("itineraryContainer");
 
   container.innerHTML = itinerary
@@ -289,19 +505,23 @@ function updateCosts() {
   const coupleRooms = parseInt(document.getElementById("coupleRooms").value);
   const familyRooms = parseInt(document.getElementById("familyRooms").value);
 
-  const coupleRate = selectedResort ? selectedResort.pricePerNight : 5000;
-  const familyRate = selectedResort
-    ? Math.round(selectedResort.pricePerNight * 1.6)
-    : 8000;
+  const coupleRate = selectedResort
+    ? selectedResort.pricePerNight || 5000
+    : 5000;
+  const familyRate = Math.round(coupleRate * 1.6);
 
-  const baseCosts = tourData.baseCosts;
+  const baseCosts = tourData.baseCosts || {
+    bus: 0,
+    foodPerPerson: 0,
+    activitiesPerPerson: 0,
+  };
 
   const accommodation =
     coupleRooms * coupleRate * 2 + familyRooms * familyRate * 2;
   const food = people * baseCosts.foodPerPerson;
   const activities = people * baseCosts.activitiesPerPerson;
   const total = baseCosts.bus + accommodation + food + activities;
-  const perPerson = Math.round(total / people);
+  const perPerson = people > 0 ? Math.round(total / people) : 0;
 
   if (selectedResort) {
     document.getElementById("resortCost").textContent =
