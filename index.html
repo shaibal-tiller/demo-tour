@@ -10,9 +10,7 @@
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <link rel="stylesheet" href="./index.css" />
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- <script defer src="./app.js"></script> -->
     <script type="module" src="./app.js"></script>
   </head>
   <body
@@ -58,7 +56,7 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-lg p-6 border border-emerald-100">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <label class="text-sm font-semibold text-gray-700 mb-2 block"
               >Total Participants</label
@@ -75,7 +73,7 @@
                 id="totalPeople"
                 value="30"
                 min="1"
-                class="flex-1 text-center text-2xl font-bold text-emerald-600 bg-emerald-50 rounded-lg py-2 border-2 border-emerald-200 focus:outline-none focus:border-emerald-400"
+                class="flex-1 text-center text-xl font-bold text-emerald-600 bg-emerald-50 rounded-lg py-2 border-2 border-emerald-200 focus:outline-none focus:border-emerald-400"
               />
               <button
                 id="people-plus"
@@ -102,7 +100,7 @@
                 id="coupleRooms"
                 value="15"
                 min="0"
-                class="flex-1 text-center text-2xl font-bold text-blue-600 bg-blue-50 rounded-lg py-2 border-2 border-blue-200 focus:outline-none focus:border-blue-400"
+                class="flex-1 text-center text-xl font-bold text-blue-600 bg-blue-50 rounded-lg py-2 border-2 border-blue-200 focus:outline-none focus:border-blue-400"
               />
               <button
                 id="couple-plus"
@@ -132,7 +130,7 @@
                 id="familyRooms"
                 value="0"
                 min="0"
-                class="flex-1 text-center text-2xl font-bold text-purple-600 bg-purple-50 rounded-lg py-2 border-2 border-purple-200 focus:outline-none focus:border-purple-400"
+                class="flex-1 text-center text-xl font-bold text-purple-600 bg-purple-50 rounded-lg py-2 border-2 border-purple-200 focus:outline-none focus:border-purple-400"
               />
               <button
                 id="family-plus"
@@ -143,6 +141,36 @@
             </div>
             <p class="text-xs text-gray-500 mt-1 text-center">
               4 people per room
+            </p>
+          </div>
+
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-2 block"
+              >Dorm Rooms</label
+            >
+            <div class="flex items-center gap-2">
+              <button
+                id="dorm-minus"
+                class="w-10 h-10 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold text-xl transition-colors"
+              >
+                -
+              </button>
+              <input
+                type="number"
+                id="dormRooms"
+                value="0"
+                min="0"
+                class="flex-1 text-center text-xl font-bold text-orange-600 bg-orange-50 rounded-lg py-2 border-2 border-orange-200 focus:outline-none focus:border-orange-400"
+              />
+              <button
+                id="dorm-plus"
+                class="w-10 h-10 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold text-xl transition-colors"
+              >
+                +
+              </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 text-center">
+              6 people per room
             </p>
           </div>
         </div>
@@ -397,9 +425,6 @@
               accept=".json,.csv"
               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-all"
             />
-            <p class="text-[10px] text-gray-400 mt-1">
-              Supports full JSON structure or simple Resort CSV.
-            </p>
           </div>
           <div
             id="storageIndicator"

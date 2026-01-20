@@ -1,11 +1,12 @@
 import { showToast } from "./utils.js";
+import { DataService } from "./data.js";
 
 export const EditorState = {
   data: {
     baseCosts: {
       busTicketUp: 1000,
       busTicketDown: 1500,
-      activitiesPerPerson: 1000,
+      activitiesPerPerson: 0,
     },
     destinations: {},
   },
@@ -13,45 +14,15 @@ export const EditorState = {
 
   init(loadedData) {
     if (loadedData && loadedData.destinations) {
-      this.migrateData(loadedData);
+      DataService.migrateData(loadedData);
       this.data = loadedData;
     } else {
-      // Seed with default if empty
       this.createDestination("bandarban");
     }
   },
 
   get() {
     return this.data;
-  },
-
-  migrateData(data) {
-    const bc = data.baseCosts || {};
-
-    // Bus Migration
-    if (!bc.busTicketUp && !bc.busTicketDown) {
-      let totalBus =
-        bc.busTicketPrice || (bc.bus ? Math.round(bc.bus / 30) : 0);
-      if (totalBus > 0) {
-        bc.busTicketUp = totalBus;
-        bc.busTicketDown = 0;
-      }
-    }
-
-    // Food Migration
-    if (bc.foodPerPerson) {
-      const globalFood = parseInt(bc.foodPerPerson);
-      Object.values(data.destinations).forEach((dest) => {
-        if (dest.itinerary) {
-          const daily = Math.round(globalFood / dest.itinerary.length);
-          dest.itinerary.forEach((d) => {
-            if (d.foodCost === undefined) d.foodCost = daily;
-          });
-        }
-      });
-      // We keep foodPerPerson key for reference but don't use it globally anymore
-    }
-    data.baseCosts = bc;
   },
 
   createDestination(name) {
@@ -65,8 +36,15 @@ export const EditorState = {
       itinerary: [
         {
           day: "Day 1",
-          foodCost: 500,
-          items: [{ time: "Morning", activity: "Arrival" }],
+          items: [
+            {
+              time: "Morning",
+              activity: "Arrival",
+              costActivity: 0,
+              costFood: 0,
+              costTransport: 0,
+            },
+          ],
         },
       ],
     };
@@ -96,7 +74,9 @@ export const EditorState = {
       id: Date.now(),
       name: "New Resort",
       location: "Location",
-      pricePerNight: 4000,
+      priceCouple: 4000,
+      priceFamily: 6000,
+      priceDorm: 8000,
       lat: dest.center[0],
       lng: dest.center[1],
       rating: 4.0,
@@ -114,7 +94,16 @@ export const EditorState = {
 
   updateResort(idx, field, val) {
     const r = this.data.destinations[this.activeDestId].resorts[idx];
-    if (["pricePerNight", "rating", "lat", "lng"].includes(field))
+    if (
+      [
+        "priceCouple",
+        "priceFamily",
+        "priceDorm",
+        "rating",
+        "lat",
+        "lng",
+      ].includes(field)
+    )
       val = parseFloat(val);
     if (field === "activities" && typeof val === "string")
       val = val
@@ -127,7 +116,7 @@ export const EditorState = {
   addDay() {
     if (this.activeDestId) {
       const itin = this.data.destinations[this.activeDestId].itinerary;
-      itin.push({ day: `Day ${itin.length + 1}`, foodCost: 500, items: [] });
+      itin.push({ day: `Day ${itin.length + 1}`, items: [] });
     }
   },
 
@@ -139,24 +128,32 @@ export const EditorState = {
 
   updateDay(idx, field, val) {
     const day = this.data.destinations[this.activeDestId].itinerary[idx];
-    if (field === "foodCost") val = parseInt(val) || 0;
     day[field] = val;
   },
 
-  updateDayItems(idx, text) {
-    const lines = text.split("\n");
-    const items = lines
-      .map((line) => {
-        const parts = line.split("-");
-        if (parts.length > 1) {
-          return {
-            time: parts[0].trim(),
-            activity: parts.slice(1).join("-").trim(),
-          };
-        }
-        return { time: "", activity: line.trim() };
-      })
-      .filter((i) => i.activity);
-    this.data.destinations[this.activeDestId].itinerary[idx].items = items;
+  addItem(dayIdx) {
+    const day = this.data.destinations[this.activeDestId].itinerary[dayIdx];
+    day.items.push({
+      time: "10:00 AM",
+      activity: "New Activity",
+      costActivity: 0,
+      costFood: 0,
+      costTransport: 0,
+    });
+  },
+
+  removeItem(dayIdx, itemIdx) {
+    const day = this.data.destinations[this.activeDestId].itinerary[dayIdx];
+    day.items.splice(itemIdx, 1);
+  },
+
+  updateItem(dayIdx, itemIdx, field, val) {
+    const item =
+      this.data.destinations[this.activeDestId].itinerary[dayIdx].items[
+        itemIdx
+      ];
+    if (["costActivity", "costFood", "costTransport"].includes(field))
+      val = parseInt(val) || 0;
+    item[field] = val;
   },
 };

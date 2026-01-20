@@ -1,25 +1,21 @@
-import { EditorState } from './editor-state.js';
-import { EditorUI } from './editor-ui.js';
-import { EditorMap } from './editor-map.js';
-import { showToast } from './utils.js';
-import { DataService } from './data.js';
+import { EditorState } from "./editor-state.js";
+import { EditorUI } from "./editor-ui.js";
+import { EditorMap } from "./editor-map.js";
+import { showToast } from "./utils.js";
+import { DataService } from "./data.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1. Initialize State
-  const loaded = await DataService.load(); // Reusing the DataService
+  const loaded = await DataService.load();
   if (loaded && loaded.data) {
     EditorState.init(loaded.data);
   } else {
     EditorState.init(null);
   }
 
-  // 2. Init UI
   EditorUI.initConfirmation();
   EditorMap.init();
 
   refreshUI();
-
-  // 3. Attach Listeners
   setupGlobalListeners();
 });
 
@@ -32,7 +28,6 @@ function refreshUI() {
 }
 
 function setupGlobalListeners() {
-  // Global Costs
   ["costBusUp", "costBusDown", "costActivity"].forEach((id) => {
     document.getElementById(id).addEventListener("change", (e) => {
       const key =
@@ -42,28 +37,30 @@ function setupGlobalListeners() {
             ? "busTicketDown"
             : "activitiesPerPerson";
       EditorState.updateGlobalCost(key, parseInt(e.target.value) || 0);
-      if (id !== "costActivity") EditorUI.updateBusLabels(); // Redundant update but safe
+      if (id !== "costActivity") EditorUI.updateBusLabels();
     });
   });
 
-  // Destination CRUD
   document.getElementById("addDestBtn").onclick = () => {
-    const name = prompt("Enter Destination Name:");
+    const name = prompt("Enter Destination Name (e.g. Sylhet):");
     if (name) {
       const id = EditorState.createDestination(name);
       if (id) refreshUI();
-      else showToast("Exists or Invalid", "error");
+      else showToast("Destination already exists", "error");
     }
   };
 
   document.getElementById("deleteDestBtn").onclick = () => {
-    EditorUI.showConfirm("Delete Destination?", "Cannot undo.", () => {
-      EditorState.deleteDestination(EditorState.activeDestId);
-      refreshUI();
-    });
+    EditorUI.showConfirm(
+      "Delete Destination?",
+      "This cannot be undone.",
+      () => {
+        EditorState.deleteDestination(EditorState.activeDestId);
+        refreshUI();
+      },
+    );
   };
 
-  // Destination Coords
   document
     .querySelectorAll('.pick-map-btn[data-target="dest"]')
     .forEach((btn) => {
@@ -84,97 +81,118 @@ function setupGlobalListeners() {
   document.getElementById("destLat").onchange = (e) =>
     (EditorState.get().destinations[EditorState.activeDestId].center[0] =
       parseFloat(e.target.value));
+
   document.getElementById("destLng").onchange = (e) =>
     (EditorState.get().destinations[EditorState.activeDestId].center[1] =
       parseFloat(e.target.value));
 
   // Child Items (Resorts/Days)
-  document.getElementById("addResortBtn").onclick = () => {
-    EditorState.addResort();
-    EditorUI.renderActiveEditor();
-  };
-  document.getElementById("addDayBtn").onclick = () => {
-    EditorState.addDay();
-    EditorUI.renderActiveEditor();
-  };
-
-  // CSV Export
-  document.getElementById("downloadResortCSV").onclick = () => {
-    // Simple inline implementation for the editor
-    if (!EditorState.activeDestId) return;
-    const resorts =
-      EditorState.get().destinations[EditorState.activeDestId].resorts;
-    const headers = [
-      "name",
-      "pricePerNight",
-      "location",
-      "lat",
-      "lng",
-      "rating",
-      "activities",
-    ];
-    const rows = [headers.join(",")];
-    resorts.forEach((r) => {
-      rows.push(
-        [
-          `"${r.name}"`,
-          r.pricePerNight,
-          `"${r.location}"`,
-          r.lat,
-          r.lng,
-          r.rating,
-          `"${(r.activities || []).join(";")}"`,
-        ].join(","),
-      );
-    });
-    const blob = new Blob([rows.join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "resorts.csv";
-    a.click();
-  };
-
-  // JSON Export
-  document.getElementById("exportJSON").onclick = () => {
-    const data = JSON.stringify(EditorState.get(), null, 2);
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "tour_data.json";
-    a.click();
-  };
-
-  // Import
-  document.getElementById("importBtn").onclick = () =>
-    document.getElementById("importFile").click();
-  document.getElementById("importFile").onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const json = JSON.parse(evt.target.result);
-        EditorState.init(json);
-        refreshUI();
-        showToast("Imported successfully", "success");
-      } catch (e) {
-        showToast("Import Failed", "error");
-      }
-      e.target.value = "";
+  const addResortBtn = document.getElementById("addResortBtn");
+  if (addResortBtn)
+    addResortBtn.onclick = () => {
+      EditorState.addResort();
+      EditorUI.renderActiveEditor();
     };
-    reader.readAsText(file);
-  };
 
-  // Custom Events from UI (debounced inputs)
+  const addDayBtn = document.getElementById("addDayBtn");
+  if (addDayBtn)
+    addDayBtn.onclick = () => {
+      EditorState.addDay();
+      EditorUI.renderActiveEditor();
+    };
+
+  // CSV/JSON Export/Import Logic ... (Same as before)
+  const downloadResortCSV = document.getElementById("downloadResortCSV");
+  if (downloadResortCSV) {
+    downloadResortCSV.onclick = () => {
+      if (!EditorState.activeDestId) return;
+      const resorts =
+        EditorState.get().destinations[EditorState.activeDestId].resorts;
+      const headers = [
+        "name",
+        "priceCouple",
+        "location",
+        "lat",
+        "lng",
+        "rating",
+        "activities",
+      ];
+      const rows = [headers.join(",")];
+      resorts.forEach((r) => {
+        rows.push(
+          [
+            `"${r.name}"`,
+            r.priceCouple,
+            `"${r.location}"`,
+            r.lat,
+            r.lng,
+            r.rating,
+            `"${(r.activities || []).join(";")}"`,
+          ].join(","),
+        );
+      });
+      const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${EditorState.activeDestId}_resorts.csv`;
+      a.click();
+    };
+  }
+
+  const exportJSON = document.getElementById("exportJSON");
+  if (exportJSON) {
+    exportJSON.onclick = () => {
+      const data = JSON.stringify(EditorState.get(), null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tour_data.json";
+      a.click();
+    };
+  }
+
+  const importBtn = document.getElementById("importBtn");
+  const importFile = document.getElementById("importFile");
+  if (importBtn && importFile) {
+    importBtn.onclick = () => importFile.click();
+    importFile.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const json = JSON.parse(evt.target.result);
+          if (json.destinations) {
+            EditorState.init(json);
+            refreshUI();
+            showToast("Imported successfully", "success");
+          } else {
+            throw new Error("Invalid structure");
+          }
+        } catch (e) {
+          showToast("Import Failed", "error");
+        }
+        e.target.value = "";
+      };
+      reader.readAsText(file);
+    };
+  }
+
+  // Custom Events
   window.addEventListener("update-resort", (e) => {
     EditorState.updateResort(e.detail.idx, e.detail.f, e.detail.v);
   });
   window.addEventListener("update-day", (e) => {
     EditorState.updateDay(e.detail.idx, e.detail.f, e.detail.v);
   });
-  window.addEventListener("update-day-items", (e) => {
-    EditorState.updateDayItems(e.detail.idx, e.detail.v);
+  window.addEventListener("update-item", (e) => {
+    EditorState.updateItem(
+      e.detail.dIdx,
+      e.detail.iIdx,
+      e.detail.f,
+      e.detail.v,
+    );
   });
 }

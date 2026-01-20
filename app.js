@@ -8,8 +8,8 @@ import { showToast } from "./js/utils.js";
 // --- APPLICATION STATE ---
 const state = {
   tourData: null,
-  currentDestination: null, // The string ID (e.g., "bandarban")
-  selectedResort: null, // The resort object
+  currentDestination: null, // e.g. "bandarban"
+  selectedResort: null, // Resort Object
 };
 
 // --- INITIALIZATION ---
@@ -19,32 +19,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /**
- * Main Initialization Sequence
- * 1. Loads data (checks local storage, then falls back to online JSON)
- * 2. Updates the UI to show where data came from
- * 3. Renders the main application view
+ * Main App Startup
+ * 1. Loads data from LocalStorage or Online JSON
+ * 2. Sets up initial state
+ * 3. Renders the App
  */
 async function initApp() {
   const loaded = await DataService.load();
 
   if (loaded && loaded.data) {
     state.tourData = loaded.data;
-
-    // Update the "Using Custom Data" indicator in the UI
     UI.updateStorageIndicator(loaded.source === "local", loaded.filename);
 
-    const dests = Object.keys(state.tourData.destinations);
+    const destKeys = Object.keys(state.tourData.destinations);
 
-    if (dests.length > 0) {
-      // Ensure we have a valid current destination
-      // If state.currentDestination is null or doesn't exist in new data, default to first one
+    if (destKeys.length > 0) {
+      // Validate State: If current dest is missing in new data, reset to first one
       if (
         !state.currentDestination ||
         !state.tourData.destinations[state.currentDestination]
       ) {
-        state.currentDestination = dests[0];
+        state.currentDestination = destKeys[0];
       }
-
       renderAppState();
     } else {
       showToast("No destinations found in data.", "error");
@@ -53,16 +49,16 @@ async function initApp() {
 }
 
 /**
- * Renders the entire application state based on current data
+ * Orchestrates the rendering of all UI components
  */
 function renderAppState() {
   const destKeys = Object.keys(state.tourData.destinations);
   const destData = state.tourData.destinations[state.currentDestination];
 
-  // 1. Render Navigation Tabs (or Dropdown for mobile)
+  // 1. Render Navigation (Tabs or Dropdown)
   UI.renderTabs(destKeys, state.currentDestination, handleDestinationSwitch);
 
-  // 2. Setup Map
+  // 2. Initialize/Update Map
   MapService.init(destData);
   MapService.renderMarkers(
     destData.resorts,
@@ -70,22 +66,21 @@ function renderAppState() {
     handleResortSelect,
   );
 
-  // 3. Render Content Sections
+  // 3. Render Itinerary List
   UI.renderItinerary(destData.itinerary);
 
-  // 4. Calculate Costs
+  // 4. Calculate & Display Costs
   UI.updateCost(state.tourData, state.currentDestination, state.selectedResort);
 
-  // Add resize listener to handle switching between Tabs and Dropdown on window resize
-  // We remove it first to avoid duplicates if initApp is called multiple times
+  // Resize Listener: Switch between Tabs/Select on resize
   window.removeEventListener("resize", handleResize);
   window.addEventListener("resize", handleResize);
 }
 
-// --- HANDLERS ---
+// --- LOGIC HANDLERS ---
 
 function handleResize() {
-  // Re-render only tabs on resize to switch between button/select view
+  // Re-render tabs only to adjust layout
   if (state.tourData) {
     UI.renderTabs(
       Object.keys(state.tourData.destinations),
@@ -99,7 +94,7 @@ function handleDestinationSwitch(destKey) {
   if (state.currentDestination === destKey) return;
 
   state.currentDestination = destKey;
-  state.selectedResort = null; // Reset selection when switching places
+  state.selectedResort = null; // Reset selection
 
   UI.hideResortDetails();
   renderAppState();
@@ -108,60 +103,67 @@ function handleDestinationSwitch(destKey) {
 function handleResortSelect(resort) {
   state.selectedResort = resort;
 
-  // Show details panel
   UI.showResortDetails(resort);
 
-  // Update map markers to highlight selection
+  // Highlight marker on map
   MapService.renderMarkers(
     state.tourData.destinations[state.currentDestination].resorts,
     resort.id,
     handleResortSelect,
   );
 
-  // Recalculate cost with resort price
+  // Update costs with specific resort pricing
   UI.updateCost(state.tourData, state.currentDestination, resort);
 }
 
-// --- INPUT LOGIC HANDLERS ---
+// --- COST CALCULATOR LOGIC ---
 
+/**
+ * Handles + / - buttons for People and Rooms
+ */
 function updateInput(type, delta) {
+  // Map button types to HTML IDs
   const map = {
     people: "totalPeople",
     couple: "coupleRooms",
     family: "familyRooms",
+    dorm: "dormRooms",
   };
   const id = map[type];
   const input = document.getElementById(id);
 
-  // Prevent negative values (people min 1, rooms min 0)
+  // Calculate new value (People min 1, Rooms min 0)
   const minVal = type === "people" ? 1 : 0;
   const newVal = Math.max(minVal, (parseInt(input.value) || 0) + delta);
 
   input.value = newVal;
 
-  // Trigger sync logic
+  // Sync logic
   if (type === "people") syncRoomsToPeople();
   else syncPeopleToRooms();
 }
 
 /**
- * When Total People changes -> Update Cost (Keep rooms as is, or you could add logic to suggest rooms)
+ * Triggered when Total People changes manually.
+ * Just recalculates cost (does not auto-adjust rooms).
  */
 function syncRoomsToPeople() {
   UI.updateCost(state.tourData, state.currentDestination, state.selectedResort);
 }
 
 /**
- * When Rooms change -> Update Total People count automatically
- * (2 per couple room, 4 per family room)
+ * Triggered when Room counts change.
+ * Automatically updates Total People based on room capacity.
  */
 function syncPeopleToRooms() {
   const couple = parseInt(document.getElementById("coupleRooms").value) || 0;
   const family = parseInt(document.getElementById("familyRooms").value) || 0;
+  const dorm = parseInt(document.getElementById("dormRooms").value) || 0;
 
-  const newTotal = couple * 2 + family * 4;
+  // Calculation: Couple(2), Family(4), Dorm(6)
+  const newTotal = couple * 2 + family * 4 + dorm * 6;
 
-  // Only update if rooms create more capacity than 0, otherwise keep people at 1
+  // Ensure at least 1 person if rooms exist, else 1
   document.getElementById("totalPeople").value = Math.max(1, newTotal);
 
   UI.updateCost(state.tourData, state.currentDestination, state.selectedResort);
@@ -170,7 +172,7 @@ function syncPeopleToRooms() {
 // --- EVENT LISTENERS ---
 
 function attachGlobalListeners() {
-  // 1. Data Management Widget Toggle
+  // 1. Widget Toggle (Data Management)
   const toggleBtn = document.getElementById("dataWidgetToggle");
   const content = document.getElementById("dataWidgetContent");
   let isExpanded = false;
@@ -196,7 +198,7 @@ function attachGlobalListeners() {
     });
   }
 
-  // 2. File Upload Handling
+  // 2. File Upload (JSON/CSV)
   const fileUpload = document.getElementById("fileUpload");
   if (fileUpload) {
     fileUpload.addEventListener("change", async (e) => {
@@ -211,22 +213,20 @@ function attachGlobalListeners() {
             newData = DataService.parseCSV(evt.target.result);
           } else {
             newData = JSON.parse(evt.target.result);
+            DataService.migrateData(newData); // Ensure format is current
           }
 
-          if (!newData.destinations)
-            throw new Error("Invalid Data Format: Missing 'destinations'");
+          if (!newData.destinations) throw new Error("Invalid Data Format");
 
-          // Save to LocalStorage
           DataService.saveLocal(newData, file.name);
           showToast(`Uploaded ${file.name} successfully`, "success");
 
-          // Reload App
-          await initApp();
+          await initApp(); // Reload with new data
         } catch (err) {
           showToast(err.message, "error");
           console.error(err);
         }
-        e.target.value = ""; // Reset input to allow re-uploading same file
+        e.target.value = ""; // Reset input
       };
       reader.readAsText(file);
     });
@@ -245,7 +245,7 @@ function attachGlobalListeners() {
   }
 
   // 4. Cost Calculator Buttons (+ / -)
-  ["people", "couple", "family"].forEach((type) => {
+  ["people", "couple", "family", "dorm"].forEach((type) => {
     const minusBtn = document.getElementById(`${type}-minus`);
     const plusBtn = document.getElementById(`${type}-plus`);
 
@@ -254,12 +254,12 @@ function attachGlobalListeners() {
     if (plusBtn) plusBtn.addEventListener("click", () => updateInput(type, 1));
   });
 
-  // 5. Cost Calculator Direct Inputs
-  ["totalPeople", "coupleRooms", "familyRooms"].forEach((id) => {
+  // 5. Cost Calculator Direct Inputs (Manual Typing)
+  ["totalPeople", "coupleRooms", "familyRooms", "dormRooms"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener("change", () => {
-        // Ensure value is valid
+        // Validation
         if (el.value === "" || parseInt(el.value) < 0) el.value = 0;
 
         if (id === "totalPeople") {
@@ -272,21 +272,21 @@ function attachGlobalListeners() {
     }
   });
 
-  // 6. Close Resort Details Button
+  // 6. Close Resort Details
   const closeResortBtn = document.getElementById("closeResortBtn");
   if (closeResortBtn) {
     closeResortBtn.addEventListener("click", () => {
       state.selectedResort = null;
       UI.hideResortDetails();
 
-      // Un-highlight map marker
+      // Remove highlight
       MapService.renderMarkers(
         state.tourData.destinations[state.currentDestination].resorts,
         null,
         handleResortSelect,
       );
 
-      // Reset cost to standard (no resort selected)
+      // Revert to general cost
       UI.updateCost(state.tourData, state.currentDestination, null);
     });
   }
