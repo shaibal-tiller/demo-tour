@@ -1,16 +1,15 @@
 // js/ui.js
 
 export const UI = {
+  // ... (renderTabs and renderItinerary remain the same) ...
   renderTabs(destinations, currentDest, onSwitch) {
     const container = document.getElementById("destination-tabs");
     container.innerHTML = "";
 
-    // Responsive Logic: Use Select if Mobile (<768px) OR > 4 Destinations
     const isMobile = window.innerWidth < 768;
     const manyItems = destinations.length > 4;
 
     if (isMobile || manyItems) {
-      // Render Select Dropdown
       const wrapper = document.createElement("div");
       wrapper.className = "relative w-full";
 
@@ -28,7 +27,6 @@ export const UI = {
 
       select.onchange = (e) => onSwitch(e.target.value);
 
-      // Custom Dropdown Arrow
       const arrow = document.createElement("div");
       arrow.className =
         "pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-emerald-600";
@@ -38,7 +36,6 @@ export const UI = {
       wrapper.appendChild(arrow);
       container.appendChild(wrapper);
     } else {
-      // Render Standard Tabs
       destinations.forEach((destKey) => {
         const btn = document.createElement("button");
         btn.textContent = destKey.charAt(0).toUpperCase() + destKey.slice(1);
@@ -103,9 +100,23 @@ export const UI = {
     const familyRooms =
       parseInt(document.getElementById("familyRooms").value) || 0;
 
-    // 1. Bus Cost (Ticket Price * People)
-    const busTicketPrice = tourData.baseCosts.busTicketPrice || 1500;
-    const totalBusCost = busTicketPrice * people;
+    // 1. Bus Cost Logic (Split or Total)
+    const bc = tourData.baseCosts;
+    // Logic: Use Up+Down if available, else fall back to 'busTicketPrice', else fall back to 'bus'/30
+    let busUp = parseInt(bc.busTicketUp) || 0;
+    let busDown = parseInt(bc.busTicketDown) || 0;
+
+    // Fallback for legacy data
+    if (busUp === 0 && busDown === 0) {
+      if (bc.busTicketPrice) {
+        busUp = bc.busTicketPrice; // Treat total as one chunk if not split
+      } else if (bc.bus) {
+        busUp = Math.round(bc.bus / 30);
+      }
+    }
+
+    const busPerPerson = busUp + busDown;
+    const totalBusCost = busPerPerson * people;
 
     // 2. Accommodation
     const coupleRate = selectedResort
@@ -117,14 +128,24 @@ export const UI = {
 
     // 3. Food Cost (Sum of daily costs from Itinerary * People)
     const currentDest = tourData.destinations[currentDestKey];
-    const dailyFoodSum = (currentDest.itinerary || []).reduce(
-      (sum, day) => sum + (parseInt(day.foodCost) || 0),
-      0,
-    );
+    let dailyFoodSum = 0;
+
+    if (currentDest && currentDest.itinerary) {
+      dailyFoodSum = currentDest.itinerary.reduce(
+        (sum, day) => sum + (parseInt(day.foodCost) || 0),
+        0,
+      );
+    }
+
+    // Fallback: If itinerary food cost is 0, check for global legacy food cost
+    if (dailyFoodSum === 0 && bc.foodPerPerson) {
+      dailyFoodSum = bc.foodPerPerson;
+    }
+
     const totalFood = dailyFoodSum * people;
 
     // 4. Activities
-    const activityRate = tourData.baseCosts.activitiesPerPerson || 0;
+    const activityRate = bc.activitiesPerPerson || 0;
     const totalActivities = activityRate * people;
 
     const total = totalBusCost + accommodation + totalFood + totalActivities;
@@ -142,8 +163,10 @@ export const UI = {
             <div class="space-y-4">
                 <div class="flex justify-between p-4 bg-gray-50 rounded-xl">
                     <div class="flex flex-col">
-                        <span class="font-medium text-gray-700">Bus Tickets (Round Trip)</span>
-                        <span class="text-xs text-gray-500">@ ${busTicketPrice.toLocaleString()}/person</span>
+                        <span class="font-medium text-gray-700">Bus Tickets</span>
+                        <div class="text-xs text-gray-500">
+                           ${busDown > 0 ? `Up: ${busUp} + Down: ${busDown}` : `Round Trip: ${busPerPerson}`}
+                        </div>
                     </div>
                     <span class="font-bold text-gray-800">BDT ${totalBusCost.toLocaleString()}</span>
                 </div>
@@ -156,7 +179,7 @@ export const UI = {
                 <div class="flex justify-between p-4 bg-gray-50 rounded-xl">
                     <div class="flex flex-col">
                         <span class="font-medium text-gray-700">Food (All Days)</span>
-                        <span class="text-xs text-gray-500">Total days menu cost</span>
+                        <span class="text-xs text-gray-500">Menu cost per person: ${dailyFoodSum}</span>
                     </div>
                     <span class="font-bold text-gray-800">BDT ${totalFood.toLocaleString()}</span>
                 </div>
@@ -179,7 +202,7 @@ export const UI = {
             </div>`;
   },
 
-  // ... (Keep showResortDetails, hideResortDetails, etc. unchanged) ...
+  // ... (rest of the file remains unchanged: showResortDetails, hideResortDetails, updateStorageIndicator, setInputs)
   showResortDetails(resort) {
     const details = document.getElementById("resortDetails");
     details.classList.remove("hidden");
