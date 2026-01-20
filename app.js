@@ -1,422 +1,88 @@
 let map;
 let markers = [];
-let currentDestination = "bandarban";
+let currentDestination = "";
 let selectedResort = null;
-
-// EMBEDDED DATA (Replaces data.json fetch)
-const tourData = {
-  baseCosts: {
-    bus: 90000,
-    foodPerPerson: 4200,
-    activitiesPerPerson: 2850,
-  },
-  destinations: {
-    bandarban: {
-      center: [22.1953, 92.2183],
-      zoom: 11,
-      resorts: [
-        {
-          id: 1,
-          name: "Green Peak Resort",
-          location: "Meghla, Bandarban",
-          lat: 22.192,
-          lng: 92.213,
-          contact: "01845-776633",
-          email: "greenpeak@resort.com",
-          activities: ["Infinity Pool", "Trekking", "Restaurant"],
-          image:
-            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&h=100&fit=crop",
-          rating: 4.5,
-          pricePerNight: 5500,
-        },
-        {
-          id: 2,
-          name: "Sairu Hill Resort",
-          location: "Chimbook Road, Bandarban",
-          lat: 22.0833,
-          lng: 92.25,
-          contact: "01531-411111",
-          email: "sairuhill@resort.com",
-          activities: ["Luxury Stay", "Cloud View", "Infinity Pool", "Spa"],
-          image:
-            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=100&h=100&fit=crop",
-          rating: 4.8,
-          pricePerNight: 12000,
-        },
-        {
-          id: 3,
-          name: "Nilgiri Hill Resort",
-          location: "Nilgiri Peak, Bandarban",
-          lat: 22.031,
-          lng: 92.316,
-          contact: "01769-299999",
-          email: "nilgiri@army.bd",
-          activities: ["Army Managed", "Sunrise Point", "High Altitude"],
-          image:
-            "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=100&h=100&fit=crop",
-          rating: 4.6,
-          pricePerNight: 6000,
-        },
-        {
-          id: 4,
-          name: "Holiday Inn Bandarban",
-          location: "Meghla, Bandarban",
-          lat: 22.198,
-          lng: 92.215,
-          contact: "01815-414141",
-          email: "holidayinn@bban.com",
-          activities: ["Lake Front", "Mini Zoo", "Boating"],
-          image:
-            "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=100&h=100&fit=crop",
-          rating: 4.2,
-          pricePerNight: 4500,
-        },
-        {
-          id: 5,
-          name: "Bawm Resort",
-          location: "Thanchi Road, Bandarban",
-          lat: 22.15,
-          lng: 92.23,
-          contact: "01855-332211",
-          email: "bawm@resort.com",
-          activities: ["Tribal Theme", "Mountain View", "Local Food"],
-          image:
-            "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=100&h=100&fit=crop",
-          rating: 4.3,
-          pricePerNight: 5000,
-        },
-        {
-          id: 6,
-          name: "Tain Khali Resort",
-          location: "Near Shoilo Propat",
-          lat: 22.17,
-          lng: 92.2,
-          contact: "01711-889977",
-          email: "tainkhali@resort.com",
-          activities: ["Waterfall Proximity", "Nature Walk"],
-          image:
-            "https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=100&h=100&fit=crop",
-          rating: 4.1,
-          pricePerNight: 3500,
-        },
-        {
-          id: 7,
-          name: "Hillside Resort",
-          location: "Milonchori, Bandarban",
-          lat: 22.155,
-          lng: 92.21,
-          contact: "01715-006699",
-          email: "hillside@milonchori.com",
-          activities: ["River View", "Eco Cottages", "Yoga"],
-          image:
-            "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=100&h=100&fit=crop",
-          rating: 4.4,
-          pricePerNight: 4800,
-        },
-        {
-          id: 8,
-          name: "Cloud 9",
-          location: "Chimbook Road",
-          lat: 22.11,
-          lng: 92.24,
-          contact: "01822-113344",
-          email: "cloud9@bandarban.com",
-          activities: ["Sunset View", "Star Gazing"],
-          image:
-            "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=100&h=100&fit=crop",
-          rating: 4.3,
-          pricePerNight: 5200,
-        },
-        {
-          id: 9,
-          name: "Fanush Resort",
-          location: "Nilachal Road",
-          lat: 22.185,
-          lng: 92.19,
-          contact: "01788-554433",
-          email: "fanush@resort.com",
-          activities: ["Nilachal View", "BBQ Corner"],
-          image:
-            "https://images.unsplash.com/photo-1445013517791-41bcd7420f8c?w=100&h=100&fit=crop",
-          rating: 4.2,
-          pricePerNight: 4000,
-        },
-        {
-          id: 10,
-          name: "Venus Resort",
-          location: "Meghla Tourism",
-          lat: 22.194,
-          lng: 92.217,
-          contact: "01866-221100",
-          email: "venus@meghla.com",
-          activities: ["Cable Car", "Lake Side", "Family Suites"],
-          image:
-            "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=100&h=100&fit=crop",
-          rating: 4.4,
-          pricePerNight: 6500,
-        },
-      ],
-      itinerary: [
-        {
-          day: "Day 0 (Night)",
-          items: [{ time: "10:30 PM", activity: "VIP coach departure" }],
-        },
-        {
-          day: "Day 1",
-          items: [
-            { time: "Morning", activity: "Check-in at resort" },
-            { time: "9 AM", activity: "Nilachal tour" },
-            { time: "12 PM", activity: "Tribal lunch" },
-            { time: "2 PM", activity: "Golden Temple" },
-            { time: "7 PM", activity: "BBQ dinner" },
-          ],
-        },
-        {
-          day: "Day 2",
-          items: [
-            { time: "5:30 AM", activity: "Sunrise at Nilgiri" },
-            { time: "11 AM", activity: "Shoilo Propat" },
-            { time: "9 PM", activity: "Luxury bus return" },
-          ],
-        },
-      ],
-    },
-    rangamati: {
-      center: [22.65, 92.18],
-      zoom: 12,
-      resorts: [
-        {
-          id: 11,
-          name: "Aranyak Holiday Resort",
-          location: "Cantonment Area, Rangamati",
-          lat: 22.665,
-          lng: 92.19,
-          contact: "01769-312015",
-          email: "aranyak@army.bd",
-          activities: ["Lake View", "Swimming Pool", "Army Managed"],
-          image:
-            "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=100&h=100&fit=crop",
-          rating: 4.7,
-          pricePerNight: 7000,
-        },
-        {
-          id: 12,
-          name: "Polwel Park Resort",
-          location: "DC Bungalow Road, Rangamati",
-          lat: 22.655,
-          lng: 92.175,
-          contact: "01777-665544",
-          email: "polwel@park.com",
-          activities: ["Amusement Park", "Infinity Pool", "Cottages"],
-          image:
-            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&h=100&fit=crop",
-          rating: 4.6,
-          pricePerNight: 8500,
-        },
-        {
-          id: 13,
-          name: "Parjatan Motel",
-          location: "Hanging Bridge, Rangamati",
-          lat: 22.635,
-          lng: 92.165,
-          contact: "01711-223344",
-          email: "parjatan@rangamati.com",
-          activities: ["Hanging Bridge", "Boating", "Iconic View"],
-          image:
-            "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=100&h=100&fit=crop",
-          rating: 4.1,
-          pricePerNight: 4000,
-        },
-        {
-          id: 14,
-          name: "Hotel Prince",
-          location: "Main Town, Rangamati",
-          lat: 22.645,
-          lng: 92.185,
-          contact: "01819-332211",
-          email: "prince@rangamati.com",
-          activities: ["Market Access", "Restaurant"],
-          image:
-            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=100&h=100&fit=crop",
-          rating: 3.9,
-          pricePerNight: 3500,
-        },
-        {
-          id: 15,
-          name: "Peda Ting Ting",
-          location: "Isolated Island, Kaptai Lake",
-          lat: 22.7,
-          lng: 92.2,
-          contact: "01715-223344",
-          email: "peda@tingting.com",
-          activities: ["Island Dining", "Boating", "Traditional food"],
-          image:
-            "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=100&h=100&fit=crop",
-          rating: 4.4,
-          pricePerNight: 5000,
-        },
-        {
-          id: 16,
-          name: "Hill Taj Resort",
-          location: "Tabalchari, Rangamati",
-          lat: 22.64,
-          lng: 92.195,
-          contact: "01755-998877",
-          email: "hilltaj@resort.com",
-          activities: ["Lake Front", "Garden"],
-          image:
-            "https://images.unsplash.com/photo-1561501900-3701fa6a0864?w=100&h=100&fit=crop",
-          rating: 4.0,
-          pricePerNight: 4200,
-        },
-        {
-          id: 17,
-          name: "Lake Shore Resort",
-          location: "Kaptai Road",
-          lat: 22.58,
-          lng: 92.21,
-          contact: "01833-221100",
-          email: "lakeshore@kaptai.com",
-          activities: ["Kayaking", "Fishing", "Cottages"],
-          image:
-            "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=100&h=100&fit=crop",
-          rating: 4.3,
-          pricePerNight: 5500,
-        },
-        {
-          id: 18,
-          name: "Borgang Resort",
-          location: "Kaptai Lake Shore",
-          lat: 22.59,
-          lng: 92.22,
-          contact: "01711-445566",
-          email: "borgang@resort.com",
-          activities: ["Eco Tourism", "Hill Tracking"],
-          image:
-            "https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=100&h=100&fit=crop",
-          rating: 4.2,
-          pricePerNight: 4800,
-        },
-        {
-          id: 19,
-          name: "Tuk Tuk Eco Village",
-          location: "Kaptai Lake Island",
-          lat: 22.71,
-          lng: 92.22,
-          contact: "01733-112233",
-          email: "tuktuk@eco.com",
-          activities: ["Bamboo Huts", "Boating", "Quiet Stay"],
-          image:
-            "https://images.unsplash.com/photo-1445013517791-41bcd7420f8c?w=100&h=100&fit=crop",
-          rating: 4.2,
-          pricePerNight: 3800,
-        },
-        {
-          id: 20,
-          name: "Kaptai Lake View",
-          location: "Assambasti, Rangamati",
-          lat: 22.62,
-          lng: 92.2,
-          contact: "01844-551122",
-          email: "lakeview@resort.com",
-          activities: ["Lakeside Park", "Restaurant"],
-          image:
-            "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=100&h=100&fit=crop",
-          rating: 4.0,
-          pricePerNight: 4500,
-        },
-      ],
-      itinerary: [
-        {
-          day: "Day 0 (Night)",
-          items: [{ time: "10:00 PM", activity: "VIP coach departure" }],
-        },
-        {
-          day: "Day 1",
-          items: [
-            { time: "Morning", activity: "Check-in at resort" },
-            { time: "9 AM", activity: "Kaptai Lake Boat tour" },
-            { time: "12 PM", activity: "Chakma lunch" },
-            { time: "2 PM", activity: "Hanging Bridge" },
-            { time: "7 PM", activity: "Lakeside BBQ" },
-          ],
-        },
-        {
-          day: "Day 2",
-          items: [
-            { time: "6:00 AM", activity: "Sunrise boat ride" },
-            { time: "10 AM", activity: "Rajban Vihara" },
-            { time: "8:30 PM", activity: "Return journey" },
-          ],
-        },
-      ],
-    },
-  },
-};
+let tourData = null; // Data will be loaded here
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
-  // Removed Fetch logic
-  initApp();
+  loadData();
 });
 
-function initApp() {
-  initMap();
-  renderItinerary();
-  updateCosts();
-  attachEventListeners();
+async function loadData() {
+  try {
+    const response = await fetch("./data.json");
+    if (!response.ok) throw new Error("Could not load data.json");
+
+    tourData = await response.json();
+
+    // Set default destination to the first key found in data
+    const destinations = Object.keys(tourData.destinations);
+    if (destinations.length > 0) {
+      currentDestination = destinations[0];
+
+      // Initialize the app parts
+      renderDestinationTabs(destinations);
+      initMap();
+      renderItinerary();
+      updateCosts();
+      attachGlobalListeners();
+    } else {
+      console.error("No destinations found in data.json");
+    }
+  } catch (error) {
+    console.error("Error loading tour data:", error);
+    alert("Failed to load tour data. Please check console.");
+  }
 }
 
-function attachEventListeners() {
-  // Destination Tabs
-  document
-    .getElementById("tab-bandarban")
-    .addEventListener("click", () => switchDestination("bandarban"));
-  document
-    .getElementById("tab-rangamati")
-    .addEventListener("click", () => switchDestination("rangamati"));
+function renderDestinationTabs(destinations) {
+  const container = document.getElementById("destination-tabs");
+  container.innerHTML = ""; // Clear existing
 
-  // People Counter
-  document
-    .getElementById("people-minus")
-    .addEventListener("click", () => changePeople(-1));
-  document
-    .getElementById("people-plus")
-    .addEventListener("click", () => changePeople(1));
-  document
-    .getElementById("totalPeople")
-    .addEventListener("change", updateRoomConfig);
+  destinations.forEach((destKey) => {
+    const btn = document.createElement("button");
+    btn.textContent = destKey.charAt(0).toUpperCase() + destKey.slice(1);
+    btn.id = `tab-${destKey}`;
+    btn.onclick = () => switchDestination(destKey);
 
-  // Couple Rooms Counter
-  document
-    .getElementById("couple-minus")
-    .addEventListener("click", () => changeRooms("couple", -1));
-  document
-    .getElementById("couple-plus")
-    .addEventListener("click", () => changeRooms("couple", 1));
-  document
-    .getElementById("coupleRooms")
-    .addEventListener("change", updateFromRooms);
+    // Base Classes
+    btn.className =
+      "flex-1 py-3 px-4 rounded-xl font-semibold transition-all whitespace-nowrap min-w-[120px]";
 
-  // Family Rooms Counter
-  document
-    .getElementById("family-minus")
-    .addEventListener("click", () => changeRooms("family", -1));
-  document
-    .getElementById("family-plus")
-    .addEventListener("click", () => changeRooms("family", 1));
-  document
-    .getElementById("familyRooms")
-    .addEventListener("change", updateFromRooms);
+    // Apply Active/Inactive styles
+    if (destKey === currentDestination) {
+      btn.classList.add("tab-active", "text-white");
+    } else {
+      btn.classList.add("bg-gray-100", "text-gray-700", "hover:bg-gray-200");
+    }
 
-  // Close Resort Details
-  document
-    .getElementById("closeResortBtn")
-    .addEventListener("click", closeResortDetails);
+    container.appendChild(btn);
+  });
+}
+
+function switchDestination(dest) {
+  if (!tourData.destinations[dest]) return;
+  currentDestination = dest;
+
+  // Re-render tabs to update styling (Active vs Inactive)
+  renderDestinationTabs(Object.keys(tourData.destinations));
+
+  // Logic to switch map and data
+  const destData = tourData.destinations[dest];
+  map.setView(destData.center, destData.zoom);
+
+  selectedResort = null;
+  closeResortDetails();
+  loadMarkers();
+  renderItinerary();
+  updateCosts();
 }
 
 // Map Logic
 function initMap() {
+  if (!tourData || !currentDestination) return;
+
   const dest = tourData.destinations[currentDestination];
   map = L.map("map").setView(dest.center, dest.zoom);
 
@@ -505,33 +171,44 @@ function closeResortDetails() {
   loadMarkers();
 }
 
-function switchDestination(dest) {
-  currentDestination = dest;
+function attachGlobalListeners() {
+  // People Counter
+  document
+    .getElementById("people-minus")
+    .addEventListener("click", () => changePeople(-1));
+  document
+    .getElementById("people-plus")
+    .addEventListener("click", () => changePeople(1));
+  document
+    .getElementById("totalPeople")
+    .addEventListener("change", updateRoomConfig);
 
-  // Update Tab Classes
-  const btnBandarban = document.getElementById("tab-bandarban");
-  const btnRangamati = document.getElementById("tab-rangamati");
-  const activeClass =
-    "flex-1 py-3 px-4 rounded-xl font-semibold transition-all tab-active";
-  const inactiveClass =
-    "flex-1 py-3 px-4 rounded-xl font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200";
+  // Couple Rooms Counter
+  document
+    .getElementById("couple-minus")
+    .addEventListener("click", () => changeRooms("couple", -1));
+  document
+    .getElementById("couple-plus")
+    .addEventListener("click", () => changeRooms("couple", 1));
+  document
+    .getElementById("coupleRooms")
+    .addEventListener("change", updateFromRooms);
 
-  if (dest === "bandarban") {
-    btnBandarban.className = activeClass;
-    btnRangamati.className = inactiveClass;
-  } else {
-    btnBandarban.className = inactiveClass;
-    btnRangamati.className = activeClass;
-  }
+  // Family Rooms Counter
+  document
+    .getElementById("family-minus")
+    .addEventListener("click", () => changeRooms("family", -1));
+  document
+    .getElementById("family-plus")
+    .addEventListener("click", () => changeRooms("family", 1));
+  document
+    .getElementById("familyRooms")
+    .addEventListener("change", updateFromRooms);
 
-  const destData = tourData.destinations[dest];
-  map.setView(destData.center, destData.zoom);
-
-  selectedResort = null;
-  closeResortDetails();
-  loadMarkers();
-  renderItinerary();
-  updateCosts();
+  // Close Resort Details
+  document
+    .getElementById("closeResortBtn")
+    .addEventListener("click", closeResortDetails);
 }
 
 // Logic Functions
@@ -570,6 +247,7 @@ function updateFromRooms() {
 }
 
 function renderItinerary() {
+  if (!tourData) return;
   const itinerary = tourData.destinations[currentDestination].itinerary;
   const container = document.getElementById("itineraryContainer");
 
@@ -605,6 +283,8 @@ function renderItinerary() {
 }
 
 function updateCosts() {
+  if (!tourData) return;
+
   const people = parseInt(document.getElementById("totalPeople").value);
   const coupleRooms = parseInt(document.getElementById("coupleRooms").value);
   const familyRooms = parseInt(document.getElementById("familyRooms").value);
