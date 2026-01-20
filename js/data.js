@@ -4,7 +4,6 @@ import { showToast } from "./utils.js";
 export const DataService = {
   async load() {
     try {
-      // 1. Check LocalStorage
       const localData = localStorage.getItem("tourData");
       const filename = localStorage.getItem("tourDataFilename");
 
@@ -17,11 +16,16 @@ export const DataService = {
         };
       }
 
-      // 2. Fetch Online
       const response = await fetch("./data.json");
       if (!response.ok) throw new Error("Could not load data.json");
-
       const data = await response.json();
+
+      // Normalize data if it uses the old format (Auto-migration)
+      if (data.baseCosts && data.baseCosts.bus) {
+        data.baseCosts.busTicketPrice = Math.round(data.baseCosts.bus / 30); // Approx conversion
+        delete data.baseCosts.bus;
+      }
+
       showToast("Loaded default data from Online", "info");
       return { data: data, source: "online", filename: null };
     } catch (error) {
@@ -42,6 +46,7 @@ export const DataService = {
   },
 
   parseCSV(csvText) {
+    // ... (Keep existing CSV logic, but default busTicketPrice instead of bus total) ...
     const lines = csvText.split("\n").filter((l) => l.trim());
     const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
     const resorts = [];
@@ -49,7 +54,6 @@ export const DataService = {
     for (let i = 1; i < lines.length; i++) {
       const row = lines[i].split(",");
       if (row.length < headers.length) continue;
-
       let resort = { id: i, activities: [] };
       headers.forEach((header, index) => {
         const val = row[index] ? row[index].trim() : "";
@@ -62,19 +66,13 @@ export const DataService = {
           resort.activities = val.split(";").map((s) => s.trim());
         else resort[header] = val;
       });
-
-      // Defaults
       if (!resort.lat) resort.lat = 22.2;
       if (!resort.lng) resort.lng = 92.2;
-      if (!resort.image)
-        resort.image =
-          "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100&h=100&fit=crop";
-
       resorts.push(resort);
     }
 
     return {
-      baseCosts: { bus: 50000, foodPerPerson: 2000, activitiesPerPerson: 1000 },
+      baseCosts: { busTicketPrice: 1500, activitiesPerPerson: 1000 },
       destinations: {
         "custom-import": {
           center: [resorts[0]?.lat || 22.2, resorts[0]?.lng || 92.2],
@@ -83,7 +81,8 @@ export const DataService = {
           itinerary: [
             {
               day: "Day 1",
-              items: [{ time: "10 AM", activity: "Custom Tour Start" }],
+              foodCost: 500,
+              items: [{ time: "10 AM", activity: "Arrival" }],
             },
           ],
         },
